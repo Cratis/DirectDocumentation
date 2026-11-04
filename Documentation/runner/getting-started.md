@@ -42,7 +42,7 @@ On Windows, run `& "$env:LOCALAPPDATA\direct-runner\direct-runner.exe"`.
 The runner prints one line and keeps running:
 
 ```text
-Direct runner 1.0.0 - open http://127.0.0.1:7190 to connect it to Direct
+Direct runner 3.20.3 - open http://127.0.0.1:7190 to connect it to Direct
 ```
 
 ## 3. Connect it to Direct
