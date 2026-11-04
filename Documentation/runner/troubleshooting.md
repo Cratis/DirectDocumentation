@@ -5,6 +5,8 @@ description: Fix a runner that does not connect, cannot be approved, shows as no
 
 ## The local page does not open
 
+Run `direct-runner status` to check the service and the runner's local page address.
+
 The runner is not running, or it uses another port. Start it, and read the line it prints:
 
 ```text
