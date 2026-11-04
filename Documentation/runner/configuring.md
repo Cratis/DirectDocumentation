@@ -1,6 +1,6 @@
 ---
 title: Configure the Direct Agent Runner
-description: Settings for the runner's ports, concurrency, Docker endpoint and state folder, how to connect and disconnect it, and how to choose whose work it runs.
+description: Settings for the runner's ports, concurrency, Docker endpoint and files folder, how to connect and disconnect it, and how to choose whose work it runs.
 ---
 
 The runner has two places to configure: the **local page** on the machine, which connects it to Direct, and
@@ -54,30 +54,40 @@ work. Work running on it now is not stopped. The local page then shows **Not a r
 
 ## Start-up settings
 
-The runner reads its settings from command-line arguments and from environment variables. All of them are
-optional.
+The runner keeps its settings in `runner.json` in its folder (see [Where the runner keeps its files](#where-the-runner-keeps-its-files)).
+It creates the file the first time it starts, with the settings it started with, and reads it on every start after that.
+Edit the file and restart the runner to change a setting, or pass the setting once as an argument or environment variable
+and the runner saves it. All settings are optional.
+
+```json
+{
+  "Runner": {
+    "DirectUrl": "https://cratis.direct",
+    "InterfacePort": 7190,
+    "RelayPort": 7191,
+    "MaximumConcurrentWorkers": 0
+  }
+}
+```
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `Runner:DirectUrl` | `https://cratis.direct` | The Direct to connect to. The local page pre-fills this and you can change it there. |
-| `Runner:InterfacePort` | `7190` | The port of the local page. |
-| `Runner:RelayPort` | `7191` | The port worker containers call back to Direct through. |
-| `Runner:MaximumConcurrentWorkers` | `0` | How many workers run at once. `0` chooses a quarter of the logical cores, and at least one. |
-| `Runner:DockerEndpoint` | Docker's platform default | The Docker endpoint, when it is not the default one, such as `unix:///home/me/.docker/run/docker.sock`. |
-| `Runner:StateDirectory` | The platform's user configuration folder | Where the runner keeps its identity. |
+| `DirectUrl` | `https://cratis.direct` | The Direct to connect to. The local page pre-fills this and you can change it there. |
+| `InterfacePort` | `7190` | The port of the local page. |
+| `RelayPort` | `7191` | The port worker containers call back to Direct through. |
+| `MaximumConcurrentWorkers` | `0` | How many workers run at once. `0` chooses a quarter of the logical cores, and at least one. |
+| `DockerEndpoint` | Docker's platform default | The Docker endpoint, when it is not the default one, such as `unix:///home/me/.docker/run/docker.sock`. |
+| `StateDirectory` | `~/.cratis/direct` | The folder the runner keeps its files in. Set it as an argument or environment variable only, since the runner reads the file from there. |
 
-Pass a setting as an argument:
+A setting comes from the first of these that has it:
+
+1. A command-line argument, `--Runner:InterfacePort=7290`.
+2. An environment variable. Prefix the name with `DIRECT_RUNNER__` and replace each `:` with `__`, as in `DIRECT_RUNNER__Runner__InterfacePort=7290`.
+3. `runner.json`.
+4. The default.
 
 ```shell
 direct-runner --Runner:InterfacePort=7290 --Runner:MaximumConcurrentWorkers=2
-```
-
-Or as an environment variable. Prefix the name with `DIRECT_RUNNER__` and replace each `:` with `__`:
-
-```shell
-export DIRECT_RUNNER__Runner__InterfacePort=7290
-export DIRECT_RUNNER__Runner__MaximumConcurrentWorkers=2
-direct-runner
 ```
 
 The runner prints the address of the local page on start, so check it uses the port you set. Both ports
@@ -87,17 +97,18 @@ listen on the loopback address only. Change a port when something else on your m
 > The number of workers also changes what Direct sees. A runner reports its maximum, and Direct sends work to
 > the runner with the most of its machine free. Lower the maximum on a machine you also work on.
 
-### Where the runner keeps its identity
+### Where the runner keeps its files
 
-The runner stores the identity it connected with in `identity.json` in its state folder. It holds the secret
-token the runner uses to connect, so the file is readable by your user only on macOS and Linux. Treat it like a
-password.
+The runner keeps two JSON files in `~/.cratis/direct` on the machine it runs on, on every operating system
+(`%USERPROFILE%\.cratis\direct` on Windows). Only your user can open the folder on macOS and Linux.
 
-| System | Default state folder |
+| File | What it holds |
 | --- | --- |
-| macOS | `~/Library/Application Support/direct-runner` |
-| Linux | `~/.config/direct-runner` (or `$XDG_CONFIG_HOME/direct-runner`) |
-| Windows | `%APPDATA%\direct-runner` |
+| `runner.json` | The settings above. |
+| `identity.json` | The identity the runner connected with, including its secret token. Treat it like a password. |
 
-Deleting the file, or selecting **Disconnect this machine**, makes the runner forget it. You connect and
+An identity saved by an earlier version in the platform's configuration folder (`~/Library/Application Support/direct-runner`,
+`~/.config/direct-runner` or `%APPDATA%\direct-runner`) moves to the new folder the first time the runner starts, so it stays connected.
+
+Deleting `identity.json`, or selecting **Disconnect this machine**, makes the runner forget its identity. You connect and
 approve it again, and it becomes a new runner in Direct.

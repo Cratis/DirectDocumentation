@@ -151,12 +151,11 @@ Start the runner and open `http://127.0.0.1:7190`. The runner's page opens. Cont
 
 ## Update the runner
 
-Install the new version over the old one and restart the runner. The runner keeps its identity in its state
-folder, so it stays connected as the same runner. See [Where the runner keeps its identity](./configuring.md#where-the-runner-keeps-its-identity).
+Install the new version over the old one and restart the runner. The runner keeps its identity and settings in `~/.cratis/direct`, so it stays connected as the same runner. See [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files).
 
 ## Uninstall the runner
 
 1. In Direct, open **Settings → Runners** and remove the runner. Its token stops working at once. Selecting
    **Disconnect this machine** on the runner's page only makes this machine forget its identity. Direct still lists the runner until you remove it.
 2. Stop the service or scheduled task, and remove the program (`brew uninstall direct-runner`, or delete the file).
-3. Delete the runner's [state folder](./configuring.md#where-the-runner-keeps-its-identity).
+3. Delete the runner's folder `~/.cratis/direct` (see [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files)).
