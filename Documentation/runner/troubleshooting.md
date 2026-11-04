@@ -8,7 +8,7 @@ description: Fix a runner that does not connect, cannot be approved, shows as no
 The runner is not running, or it uses another port. Start it, and read the line it prints:
 
 ```text
-Direct runner 1.0.0 - open http://127.0.0.1:7190 to connect it to Direct
+Direct runner 3.20.3 - open http://127.0.0.1:7190 to connect it to Direct
 ```
 
 If the runner exits at start, another program is using the port. Choose another with
