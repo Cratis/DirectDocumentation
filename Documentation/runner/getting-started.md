@@ -75,6 +75,20 @@ Direct** on the runner's page to open it again.
 
 You can also reach the dialog yourself: in Direct, open **Settings → Runners** and open the link with the code.
 
+## Enroll without a browser
+
+On a machine with no browser, such as a server, skip steps 3 and 4. A maintainer creates a single-use code in Direct, and you start the runner with it.
+
+1. In Direct, open **Settings → Runners**, select **Add runner**, optionally enter a name, and choose how long the code is valid: 1, 8 or 24 hours. Select **Create code**.
+2. Copy the code. Direct shows it once and keeps only a hash of it, so it cannot show it again.
+3. On the machine, start the runner with the code:
+
+   ```shell
+   direct-runner --enroll ABCD-EFGH-2345-6789-JKMN-PQRS
+   ```
+
+The runner enrolls itself, takes the name from the code (or its host name), and shows **Connected**. There is no approval step. The code works once. It stops working when it expires or when a maintainer revokes it under **Settings → Runners**.
+
 ## 5. Check that it is connected
 
 Your runner's page changes to **Connected**.

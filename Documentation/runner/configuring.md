@@ -43,6 +43,12 @@ runs on the runner. Pick nobody to run everyone's work again.
 
 This is how you keep a personal machine for your own work, or put a shared build machine at a team's disposal.
 
+### Add a runner with a code
+
+Select **Add runner**, optionally enter a name, choose how long the code stays valid and select **Create code**. Direct shows the code once, with the command to run on the machine. Codes that nobody has used yet are listed under **Waiting for a machine**, with the time left and who created them. Select **Revoke** to stop one from working.
+
+A code on the command line is visible to other users of the machine in the list of running processes. Prefer the environment variable, or `install --enroll`, which saves the code in `runner.json` (readable only by you). An environment variable stays in that shell's environment, so unset it afterwards.
+
 ### Rename a runner
 
 Select the pencil on the runner's row, enter the new name and save. The name is only a label in Direct.
@@ -77,6 +83,7 @@ and the runner saves it. All settings are optional.
 | `RelayPort` | `7191` | The port worker containers call back to Direct through. |
 | `MaximumConcurrentWorkers` | `0` | How many workers run at once. `0` chooses a quarter of the logical cores, and at least one. |
 | `DockerEndpoint` | Docker's platform default | The Docker endpoint, when it is not the default one, such as `unix:///home/me/.docker/run/docker.sock`. |
+| `EnrollmentCode` | none | A single-use code a maintainer created under **Settings → Runners → Add runner**. The runner spends it when it starts without an identity and removes it afterwards. Set it with `--enroll <code>`, or with the `DIRECT_RUNNER__Runner__EnrollmentCode` environment variable. |
 | `StateDirectory` | `~/.cratis/direct` | The folder the runner keeps its files in. Set it as an argument or environment variable only, since the runner reads the file from there. |
 
 A setting comes from the first of these that has it:

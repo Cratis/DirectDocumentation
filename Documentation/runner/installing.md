@@ -144,6 +144,16 @@ Register-ScheduledTask -TaskName "Direct Agent Runner" -Action $action -Trigger 
 
 Start it now with `Start-ScheduledTask -TaskName "Direct Agent Runner"`. Docker Desktop must also start at login.
 
+## Enroll the runner with a code
+
+To start the runner already enrolled, pass a code a maintainer created under **Settings → Runners → Add runner**:
+
+```shell
+direct-runner --enroll ABCD-EFGH-2345-6789-JKMN-PQRS
+```
+
+The runner saves the code in `runner.json` only until it has used it, then removes it. See [Enroll without a browser](./getting-started.md#enroll-without-a-browser).
+
 ## Verify the installation
 
 Start the runner and open `http://127.0.0.1:7190`. The runner's page opens. Continue with
