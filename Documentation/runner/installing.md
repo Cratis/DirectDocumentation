@@ -53,14 +53,26 @@ the quarantine flag: `xattr -d com.apple.quarantine /usr/local/bin/direct-runner
 
 ### Start the runner at login
 
-With Homebrew, let it manage the runner as a background service:
+Choose one way to start the runner; do not register it with both service managers.
+
+If you installed from the download, run:
+
+```shell
+direct-runner install
+```
+
+This creates a LaunchAgent that starts at login and restarts the runner if it stops. Its log is
+`~/Library/Logs/direct-runner.log`.
+
+If you installed with Homebrew, let it manage the runner as a background service instead:
 
 ```shell
 brew services start direct-runner
 ```
 
 The service restarts the runner if it stops and writes its log to `$(brew --prefix)/var/log/direct-runner.log`.
-Stop it with `brew services stop direct-runner`.
+Stop it with `brew services stop direct-runner`. `direct-runner install` refuses to register a second service
+when Homebrew manages the runner.
 
 ## Linux
 
@@ -89,7 +101,20 @@ The `sha256sum` line prints `OK` for the file you downloaded.
 
 ### Start the runner at login
 
-Run the runner as a systemd user service. Create `~/.config/systemd/user/direct-runner.service`:
+If you installed from the download, run:
+
+```shell
+direct-runner install
+loginctl enable-linger "$USER"   # keep it running when you are not logged in
+```
+
+This writes and enables `~/.config/systemd/user/direct-runner.service`. Follow its log with
+`journalctl --user -u direct-runner -f`.
+
+If you installed with Homebrew, use `brew services start direct-runner` instead. Use only one service manager.
+
+As an alternative to `install`, create the unit yourself at `~/.config/systemd/user/direct-runner.service`.
+`direct-runner install` will not overwrite a unit it did not write:
 
 ```ini
 [Unit]
@@ -110,7 +135,6 @@ Then enable it:
 ```shell
 systemctl --user daemon-reload
 systemctl --user enable --now direct-runner
-loginctl enable-linger "$USER"   # keep it running when you are not logged in
 ```
 
 Follow its log with `journalctl --user -u direct-runner -f`.
@@ -132,6 +156,8 @@ Start it with `& "$env:LOCALAPPDATA\direct-runner\direct-runner.exe"`. If Window
 file, check its checksum against `checksums.txt` (`Get-FileHash direct-runner.zip`) before choosing to run it.
 
 ### Start the runner at login
+
+`direct-runner install` is not available on Windows; use the scheduled task below.
 
 Create a scheduled task that starts the runner when you sign in:
 
@@ -159,6 +185,16 @@ The runner saves the code in `runner.json` only until it has used it, then remov
 Start the runner and open `http://127.0.0.1:7190`. The runner's page opens. Continue with
 [Get started](./getting-started.md#3-connect-it-to-direct) to connect it.
 
+## Check the runner
+
+```shell
+direct-runner status
+```
+
+This shows whether the login service is installed and running, and whether the runner is connected to Direct.
+While it is waiting for approval, it shows the approval code and link. If it is not connected, it shows the local
+page to open.
+
 ## Update the runner
 
 Install the new version over the old one and restart the runner. The runner keeps its identity and settings in `~/.cratis/direct`, so it stays connected as the same runner. See [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files).
@@ -167,5 +203,10 @@ Install the new version over the old one and restart the runner. The runner keep
 
 1. In Direct, open **Settings → Runners** and remove the runner. Its token stops working at once. Selecting
    **Disconnect this machine** on the runner's page only makes this machine forget its identity. Direct still lists the runner until you remove it.
-2. Stop the service or scheduled task, and remove the program (`brew uninstall direct-runner`, or delete the file).
-3. Delete the runner's folder `~/.cratis/direct` (see [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files)).
+2. Stop and remove the login service with `direct-runner uninstall`, or use `brew services stop direct-runner`
+   if Homebrew manages it. On Windows, stop the scheduled task. Then remove the program
+   (`brew uninstall direct-runner`, or delete the file). `direct-runner uninstall` keeps the identity and settings
+   in `~/.cratis/direct`. For a hand-written systemd unit, disable it with `systemctl --user disable --now direct-runner`
+   and remove the unit yourself; `uninstall` only removes a service it wrote.
+3. If you also want to remove the identity and settings, delete the runner's folder `~/.cratis/direct`
+   (see [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files)).
