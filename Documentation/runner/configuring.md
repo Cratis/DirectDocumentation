@@ -16,7 +16,7 @@ The runner serves a page at `http://127.0.0.1:7190` on its own machine only. It 
 | Not connected | The Direct address and **Connect to Direct** | Connect the runner. |
 | Waiting for approval | A code and **Approve in Direct** | Open the approval page, or connect again for a new code. |
 | Connecting | **Connecting to Direct...** | Wait. The runner retries with a growing delay of up to one minute. |
-| Connected | The runner's name, organization, running workers and Direct address | Disconnect the machine. |
+| Connected | The runner's name, organization, running workers, Direct address and whether it takes work | Pause or resume new work, or disconnect the machine. |
 | Not a runner any more | A message that Direct removed the machine | Connect again. |
 
 ![The Direct runner page connected](./images/local-connected.png)
@@ -42,6 +42,12 @@ runner's row (for example *Everyone*), pick the people, and select **Save**. Onl
 runs on the runner. Pick nobody to run everyone's work again.
 
 This is how you keep a personal machine for your own work, or put a shared build machine at a team's disposal.
+
+### Add a runner with a code
+
+Select **Add runner**, optionally enter a name, choose how long the code stays valid and select **Create code**. Direct shows the code once, with the command to run on the machine. Codes that nobody has used yet are listed under **Waiting for a machine**, with the time left and who created them. Select **Revoke** to stop one from working.
+
+A code on the command line is visible to other users of the machine in the list of running processes. Prefer the environment variable, or `install --enroll`, which saves the code in `runner.json` (readable only by you). An environment variable stays in that shell's environment, so unset it afterwards.
 
 ### Rename a runner
 
@@ -76,7 +82,9 @@ and the runner saves it. All settings are optional.
 | `InterfacePort` | `7190` | The port of the local page. |
 | `RelayPort` | `7191` | The port worker containers call back to Direct through. |
 | `MaximumConcurrentWorkers` | `0` | How many workers run at once. `0` chooses a quarter of the logical cores, and at least one. |
+| `PausedDuring` | No scheduled pauses | Local-time windows when no new work starts, such as `Mon-Fri 08:00-18:00`. See [Share your machine](./sharing-your-machine.md#set-paused-hours). |
 | `DockerEndpoint` | Docker's platform default | The Docker endpoint, when it is not the default one, such as `unix:///home/me/.docker/run/docker.sock`. |
+| `EnrollmentCode` | none | A single-use code a maintainer created under **Settings → Runners → Add runner**. The runner spends it when it starts without an identity and removes it afterwards. Set it with `--enroll <code>`, or with the `DIRECT_RUNNER__Runner__EnrollmentCode` environment variable. |
 | `StateDirectory` | `~/.cratis/direct` | The folder the runner keeps its files in. Set it as an argument or environment variable only, since the runner reads the file from there. |
 
 A setting comes from the first of these that has it:
@@ -99,12 +107,13 @@ listen on the loopback address only. Change a port when something else on your m
 
 ### Where the runner keeps its files
 
-The runner keeps two JSON files in `~/.cratis/direct` on the machine it runs on, on every operating system
+The runner keeps its JSON files in `~/.cratis/direct` on the machine it runs on, on every operating system
 (`%USERPROFILE%\.cratis\direct` on Windows). Only your user can open the folder on macOS and Linux.
 
 | File | What it holds |
 | --- | --- |
 | `runner.json` | The settings above. |
+| `pause.json` | A manual pause and when it began. `direct-runner resume` removes it. |
 | `identity.json` | The identity the runner connected with, including its secret token. Treat it like a password. |
 
 An identity saved by an earlier version in the platform's configuration folder (`~/Library/Application Support/direct-runner`,

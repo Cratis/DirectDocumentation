@@ -46,6 +46,7 @@ you keep your organization's secrets.
 - **Only approve a code you see on your own machine.** Never approve a code someone sends you.
 - **The configuration page is local.** It answers on `127.0.0.1` only, and it refuses changes that do not
   come from the page itself, so another website open in your browser cannot connect or disconnect the runner.
+- **An enrollment code works once.** A maintainer creates it, Direct stores only a hash of it, it stops working when it expires or is revoked, and the runner removes it from its settings after use. Only create a code for a machine you control, and treat it like a password until it is used.
 - **Removing a runner in Direct takes effect at once.** Its token stops working. Work already running on it
   is not stopped.
 
@@ -54,4 +55,5 @@ you keep your organization's secrets.
 - [Get started](./getting-started.md) - install, connect and approve your first runner.
 - [Install the runner](./installing.md) - every installation option for macOS, Linux and Windows.
 - [Configure the runner](./configuring.md) - settings, and who a runner runs work for.
+- [Share your machine](./sharing-your-machine.md) - pause new work, set paused hours and protect worker containers from cleanup.
 - [Troubleshooting](./troubleshooting.md) - when the runner does not connect or does not take work.

@@ -5,6 +5,8 @@ description: Fix a runner that does not connect, cannot be approved, shows as no
 
 ## The local page does not open
 
+Run `direct-runner status` to check the service and the runner's local page address.
+
 The runner is not running, or it uses another port. Start it, and read the line it prints:
 
 ```text
@@ -65,6 +67,19 @@ The runner starts each worker as a Docker container, named `cratis-ai-agent-` fo
 - On Linux, your user cannot use Docker. Add it to the `docker` group, then sign in again.
 - On Linux, workers cannot reach the runner. Workers call back through `host.docker.internal`. The runner also
   listens on Docker's bridge address for this. Check Docker's default bridge network is up.
+
+## The runner shows a problem about its enrollment code
+
+| Message | What to do |
+| --- | --- |
+| Direct did not accept the enrollment code | Check the code for typing mistakes, and that the runner points at the right Direct. |
+| The enrollment code has expired | Create a new code under **Settings → Runners → Add runner**. |
+| The enrollment code was already used | Codes work once. Create a new one. |
+| The enrollment code was revoked | A maintainer revoked it. Create a new one. |
+| This machine is already a runner in Direct | Remove the runner in Direct, disconnect the machine, and enroll again. |
+| This Direct does not accept enrollment codes | Your Direct is older than the runner. Update Direct, then restart the runner; it keeps the code until then. |
+
+The runner removes a code that Direct accepted or refused for good. If Direct could not be reached, the runner keeps the code and tries again.
 
 ## Start over
 
