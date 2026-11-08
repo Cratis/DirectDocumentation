@@ -54,4 +54,5 @@ you keep your organization's secrets.
 - [Get started](./getting-started.md) - install, connect and approve your first runner.
 - [Install the runner](./installing.md) - every installation option for macOS, Linux and Windows.
 - [Configure the runner](./configuring.md) - settings, and who a runner runs work for.
+- [See what your runners are doing](./runner-page.md) - each runner's status, its current work, and why work was not picked for it.
 - [Troubleshooting](./troubleshooting.md) - when the runner does not connect or does not take work.

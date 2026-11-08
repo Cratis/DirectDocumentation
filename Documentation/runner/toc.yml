@@ -6,5 +6,7 @@
   href: installing.md
 - name: Configure the runner
   href: configuring.md
+- name: See what your runners are doing
+  href: runner-page.md
 - name: Troubleshooting
   href: troubleshooting.md

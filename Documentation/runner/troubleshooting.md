@@ -48,10 +48,14 @@ The runner page says **Connecting to Direct...**, or Direct shows the runner wit
 
 ## The runner is connected but gets no work
 
-Work runs on the runner with the most of its machine free that is open to whoever asked. Check:
+Work runs on the runner with the most of its machine free that is open to whoever asked. To see the reason for a
+particular piece of work, open it and select the **Runner** tab. It lists each runner and why it was or was not
+picked. See [See what your runners are doing](./runner-page.md#find-out-why-a-runner-was-not-picked). Check:
 
 - **Who it runs for.** In **Settings → Runners**, the runner's audience may not include the person whose work is scheduled.
   See [Choose who a runner runs for](./configuring.md#choose-who-a-runner-runs-for).
+- **Its status.** In **Settings → Runners**, a runner that is paused, full or offline takes no new work. See
+  [Read a runner's status](./runner-page.md#read-a-runners-status).
 - **How full it is.** A machine near its CPU, memory or disk limits is passed over, and the cluster runs the work.
 - **Its worker limit.** Direct shows `N of M workers running`. At the maximum, no more work starts there.
 - **Docker.** Run `docker info`. When Docker is stopped, a worker cannot start.
