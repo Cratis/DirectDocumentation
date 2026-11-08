@@ -37,13 +37,11 @@ A paused runner says why.
 | `Paused at the machine since 09:15` | Someone paused the runner on its own machine at that time. |
 | `Paused at the machine` | The same, without a time. |
 | `Paused until 18:00` | The runner's schedule keeps it from taking work until that time. |
-| `Paused by its schedule` | The same, without an end time. |
-| `Paused` | The runner is paused, but does not say why. Runners on an older version of the runner program show this. |
+| `Paused` | The runner is paused, but did not report why. Runners on an older version of the runner program always show this. |
 
 Times are shown in your local time. Everyone sees a pause set on the machine the same way, whoever set it.
 
-To change a pause, change it where it was set: on the runner's machine, or in the runner's schedule. See
-[Configure the runner](./configuring.md).
+A pause is set on the runner's own machine, so it is changed or resumed there, not in Direct.
 
 ## See what a runner is working on
 
@@ -113,8 +111,8 @@ when it does not exist in your organization. Direct does not say which.
 ### When the work stays where it is
 
 Work that was placed on a runner or on the cluster keeps that placement while its worker may still be running.
-The tab then says `Its worker may still be running, so this work stays on …`. The other runners show
-`The work stays where its worker runs`, whatever room they have.
+The tab then says `Its worker may still be running, so this work stays on …`. Runners that could take the work show
+`The work stays where its worker runs`; the rest still show why they could not take it.
 
 ## When your work did not go to your runner
 
@@ -124,10 +122,10 @@ Read the **Runner** tab of the work, then compare it with the runner's row under
   [Choose who a runner runs for](./configuring.md#choose-who-a-runner-runs-for).
 - If it shows `Offline` or `Not reported yet`, check that the runner is running and connected. See
   [Troubleshooting](./troubleshooting.md#the-runner-is-approved-but-shows-as-not-connected).
-- If it shows `Paused`, find out why from the row's pause reason, and resume it where it was paused.
+- If it shows `Paused`, find out why from the row's pause reason, and resume it on the runner's machine.
 - If it shows `No free worker slot`, `Low on memory` or `Low on disk`, wait for work to finish or free up the machine.
-- If it shows `The cluster has more room` or `Another runner has more room`, the runner works, and another place had
-  more free when the work was placed.
+- If it shows `The cluster has more room` or `Another runner has more room`, the runner works, and another place
+  has more room right now.
 
 ## Next steps
 
