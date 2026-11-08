@@ -46,6 +46,16 @@ The runner page says **Connecting to Direct...**, or Direct shows the runner wit
 - Check Direct still lists the runner. If a maintainer removed it, the page shows **Not a runner any more**. Connect
   it again.
 
+## "This runner is too old for Cratis Direct"
+
+The runner and Direct agree which version of their protocol to speak each time the runner connects. When Direct no
+longer speaks any version this runner does, it refuses the connection and the runner page shows the reason, with the
+minimum protocol version Direct needs. Install the latest runner, see [Install the runner](./installing.md). The runner
+tries again once a minute, so it connects shortly after the upgrade.
+
+If the message says **Cratis Direct must be updated**, the runner is newer than Direct. It connects once Direct is
+updated.
+
 ## The runner is connected but gets no work
 
 Work runs on the runner with the most of its machine free that is open to whoever asked. Check:
@@ -54,6 +64,9 @@ Work runs on the runner with the most of its machine free that is open to whoeve
   See [Choose who a runner runs for](./configuring.md#choose-who-a-runner-runs-for).
 - **How full it is.** A machine near its CPU, memory or disk limits is passed over, and the cluster runs the work.
 - **Its worker limit.** Direct shows `N of M workers running`. At the maximum, no more work starts there.
+- **Its protocol version.** **Settings → Runners** shows each connected runner's protocol version. A runner that
+  speaks an older version than Direct shows an upgrade hint, and work that needs a newer version runs elsewhere.
+  Install the latest runner.
 - **Docker.** Run `docker info`. When Docker is stopped, a worker cannot start.
 
 ## Workers cannot start
