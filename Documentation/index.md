@@ -1,6 +1,6 @@
 ---
 title: Direct
-description: Public documentation for Direct, the Cratis platform that schedules and governs AI agents working across your repositories, starting with the Direct Agent Runner.
+description: Public documentation for Direct, the Cratis platform that schedules and governs AI agents across your repositories, starting with the Direct Agent Runner.
 ---
 
 Direct schedules AI agents to investigate and implement work across the repositories of your GitHub

@@ -1,6 +1,6 @@
 ---
 title: Install the Direct Agent Runner
-description: Install the Direct Agent Runner on macOS, Linux and Windows, verify the download, and start it automatically at login.
+description: Install the Direct Agent Runner on macOS, Linux and Windows with Homebrew or a download, verify the archive, and start the runner automatically at login.
 ---
 
 The runner is a single self-contained program. It needs no .NET installation. Install it with Homebrew on
