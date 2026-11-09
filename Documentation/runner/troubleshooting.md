@@ -1,6 +1,6 @@
 ---
 title: Troubleshoot the Direct Agent Runner
-description: Fix a runner that does not connect, cannot be approved, shows as not connected in Direct or does not take work.
+description: Fix a Direct Agent Runner that does not connect, cannot be approved, shows as not connected in Direct, is too old for Direct, or does not take work.
 ---
 
 ## The local page does not open
