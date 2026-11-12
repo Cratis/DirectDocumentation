@@ -11,6 +11,6 @@ install, run or configure yourself.
 
 | Topic | What it covers |
 | --- | --- |
-| [Direct Agent Runner](./runner/index.md) | Run Direct's agents on your own machine instead of the Direct cluster. Install it on macOS, Linux or Windows, connect it to Direct and choose whose work it runs. |
+| [Direct Agent Runner](./runner/index.md) | Run Direct's agents on your own machine instead of the Direct cluster. Install it on macOS or Linux, connect it to Direct and choose whose work it runs. |
 
 More topics arrive here as further parts of Direct become public.
