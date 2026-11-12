@@ -1,6 +1,6 @@
 ---
 title: Get started with the Direct Agent Runner
-description: Install the Direct Agent Runner, connect it to Direct, approve it, and see it take work, in about five minutes.
+description: Install the Direct Agent Runner, start it, connect it to Direct, approve it as a maintainer, and check that it is connected, in about five minutes.
 ---
 
 In this tutorial you install the runner, connect it to Direct and approve it. When you finish, your
