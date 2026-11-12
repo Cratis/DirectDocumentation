@@ -1,70 +1,63 @@
 ---
 title: Troubleshoot the Direct Agent Runner
-description: Fix a Direct Agent Runner that does not connect, cannot be approved, shows as not connected in Direct, is too old for Direct, or does not take work.
+description: Fix local page authentication, enrollment code failures, connection and protocol problems, and workers that cannot start.
 ---
 
 ## The local page does not open
 
-Run `direct-runner status` to check the service and the runner's local page address.
+Run `direct-runner status` to check the service and local page address. As the same user who runs the daemon,
+run `direct-runner open`, then open its one-time address within a minute. Opening the bare address does not
+authenticate you. Do not share the printed address or the runner's `interface.token` file.
 
-The runner is not running, or it uses another port. Start it, and read the line it prints:
+If the daemon is stopped, start it. If it exits at startup, read its error; a port conflict is only one
+possible cause. Set `--Runner:InterfacePort=7290` for a different local page port. Pass that same setting to
+`status` and `open` if needed; see [Configure the runner](./configuring.md#start-up-settings).
 
-```text
-Direct runner 3.20.3 - open http://127.0.0.1:7190 to connect it to Direct
-```
-
-If the runner exits at start, another program is using the port. Choose another with
-`--Runner:InterfacePort`. See [Configure the runner](./configuring.md#start-up-settings).
-
-The page only answers on `127.0.0.1` and `localhost` on the machine the runner runs on. It is not reachable from
-another computer, by design. To configure a runner on a remote machine, forward the port over SSH:
-`ssh -L 7190:127.0.0.1:7190 user@host`, then open `http://127.0.0.1:7190` locally.
+The page binds to loopback and requires a local ownership proof. Use code enrollment on a headless machine;
+forwarding the port alone does not authenticate your browser.
 
 ## "Direct could not be reached"
 
 The runner could not contact the Direct address. Check that the address is right, that the machine can reach it
 over HTTPS, and that a proxy or firewall does not block outbound connections.
 
-## "That is not a Direct address"
+## I cannot enroll the runner
 
-The address on the page is not a valid URL. Include the scheme, for example `https://cratis.direct`.
+Browser-code approval is no longer available. Ask a maintainer to create a single-use code under
+**Settings → Runners → Add runner**, then restart the runner with it. Set `Runner:DirectUrl` before enrollment
+if your organization uses a different Direct address. See [Enroll without a browser](./getting-started.md#enroll-without-a-browser).
 
-## "No machine is waiting under that code"
-
-The code in Direct's approval dialog expired, or the runner connected again and made a new one. Select **Connect to
-Direct** on the runner's page for a new code and approve that one.
-
-## I cannot approve the code
-
-Only maintainers can approve a runner. Ask a maintainer of your organization to open the approval link, or to type the
-code under **Settings → Runners**.
-
-## The runner is approved but shows as not connected
+## The runner is enrolled but shows as not connected
 
 The runner page says **Connecting to Direct...**, or Direct shows the runner without a green dot.
 
 - Check the machine still reaches Direct. The runner retries with a delay of up to one minute.
 - Check the runner is running. A stopped runner shows as not connected in Direct.
-- Check Direct still lists the runner. If a maintainer removed it, the page shows **Not a runner any more**. Connect
-  it again.
+- Check Direct still lists the runner. If its credential expired or was revoked, the page shows **Not a runner
+  any more** after an authentication refusal. Enroll again with a new code.
 
 ## "This runner is too old for Cratis Direct"
 
 The runner and Direct agree which version of their protocol to speak each time the runner connects. When Direct no
 longer speaks any version this runner does, it refuses the connection and the runner page shows the reason, with the
-minimum protocol version Direct needs. Install the latest runner, see [Install the runner](./installing.md). The runner
-tries again once a minute, so it connects shortly after the upgrade.
+minimum protocol version Direct needs. Install the latest runner and restart it; see
+[Install the runner](./installing.md). An incompatible daemon waits a minute between connection attempts;
+installing a file alone does not upgrade an already running process.
 
 If the message says **Cratis Direct must be updated**, the runner is newer than Direct. It connects once Direct is
 updated.
 
 ## The runner is connected but gets no work
 
-Work runs on the runner with the most of its machine free that is open to whoever asked. Check:
+A connection is necessary but not sufficient for work placement. Check:
 
 - **Who it runs for.** In **Settings → Runners**, the runner's audience may not include the person whose work is scheduled.
   See [Choose who a runner runs for](./configuring.md#choose-who-a-runner-runs-for).
-- **How full it is.** A machine near its CPU, memory or disk limits is passed over, and the cluster runs the work.
+- **Availability.** A manual or scheduled pause, a maintainer hold or a quarantine can exclude the runner.
+- **Capabilities.** The runner must meet the work's requirements within its enrolled capability ceiling.
+- **Images.** Worker images must be allowed locally by exact repository and SHA-256 digest. An empty allow-list refuses all workers.
+- **How full it is.** CPU, memory, disk reserves and worker slots affect eligibility. Another runner or the
+  cluster can take the work only if it meets the requirements.
 - **Its worker limit.** Direct shows `N of M workers running`. At the maximum, no more work starts there.
 - **Its protocol version.** **Settings → Runners** shows each connected runner's protocol version. A runner that
   speaks an older version than Direct shows an upgrade hint, and work that needs a newer version runs elsewhere.
@@ -96,8 +89,9 @@ The runner removes a code that Direct accepted or refused for good. If Direct co
 
 ## Start over
 
-To reset a runner, in Direct remove it under **Settings → Runners**, then on the machine select **Disconnect this
-machine** and connect and approve it again.
+To reset a runner, remove it under **Settings → Runners**, then select **Disconnect this machine** on the
+authenticated local page. Restart with a new maintainer-created enrollment code. Disconnecting removes the
+local identity and stored credentials; deleting `identity.json` alone is not credential cleanup.
 
 ## Get help
 

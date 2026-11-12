@@ -1,6 +1,6 @@
 ---
 title: Install the Direct Agent Runner
-description: Install the Direct Agent Runner on macOS, Linux and Windows with Homebrew or a download, verify the archive, and start the runner automatically at login.
+description: Install the Direct Agent Runner on macOS or Linux with Homebrew or a download, enroll it with a code, and manage its login service.
 ---
 
 The runner is a single self-contained program. It needs no .NET installation. Install it with Homebrew on
@@ -8,14 +8,15 @@ macOS or Linux, or download the file for your system.
 
 ## Prerequisites
 
-- Docker, running. On macOS and Windows install [Docker Desktop](https://docs.docker.com/get-docker/). On Linux
+- Docker, running. On macOS install [Docker Desktop](https://docs.docker.com/get-docker/). On Linux
   install Docker Engine and make sure your user can run `docker` without `sudo`.
 - Outbound HTTPS access to your Direct address.
 
 ## Downloads
 
-Every release is published at [github.com/Cratis/DirectPublic/releases](https://github.com/Cratis/DirectPublic/releases)
-with one file per system and a `checksums.txt` file with the SHA-256 of each.
+Check [github.com/Cratis/DirectPublic/releases](https://github.com/Cratis/DirectPublic/releases) for available
+versions. The macOS and Linux archive names have the following form; replace `<version>` with the release
+version. A `checksums.txt` file supplies the SHA-256 checksums.
 
 | System | Processor | File |
 | --- | --- | --- |
@@ -23,10 +24,8 @@ with one file per system and a `checksums.txt` file with the SHA-256 of each.
 | macOS | Intel | `direct-runner-<version>-osx-x64.tar.gz` |
 | Linux | x64 | `direct-runner-<version>-linux-x64.tar.gz` |
 | Linux | arm64 | `direct-runner-<version>-linux-arm64.tar.gz` |
-| Windows | x64 | `direct-runner-<version>-win-x64.zip` |
-| Windows | arm64 | `direct-runner-<version>-win-arm64.zip` |
 
-The archive holds one file: `direct-runner` (`direct-runner.exe` on Windows).
+The archive holds one file: `direct-runner`.
 
 ## macOS
 
@@ -41,8 +40,10 @@ Update later with `brew upgrade direct-runner`.
 
 ### From the download
 
+Set `VERSION` to the version listed on the release page, without the leading `v`:
+
 ```shell
-VERSION=3.20.3
+VERSION='replace-with-release-version'
 curl -fLO "https://github.com/Cratis/DirectPublic/releases/download/v$VERSION/direct-runner-$VERSION-osx-arm64.tar.gz"
 tar -xzf "direct-runner-$VERSION-osx-arm64.tar.gz"
 sudo install -m 755 direct-runner /usr/local/bin/direct-runner
@@ -55,11 +56,15 @@ the quarantine flag: `xattr -d com.apple.quarantine /usr/local/bin/direct-runner
 
 Choose one way to start the runner; do not register it with both service managers.
 
-If you installed from the download, run:
+If you installed from the download, put the executable in its permanent location first, then run as your
+normal user, without `sudo`:
 
 ```shell
 direct-runner install
 ```
+
+Running `install` again updates and restarts a registration it created. It refuses to overwrite one it did
+not create. Enrollment is separate; see [Enroll the runner with a code](#enroll-the-runner-with-a-code).
 
 This creates a LaunchAgent that starts at login and restarts the runner if it stops. Its log is
 `~/Library/Logs/direct-runner.log`.
@@ -87,8 +92,10 @@ brew install direct-runner
 
 ### From the download
 
+Set `VERSION` to the version listed on the release page, without the leading `v`:
+
 ```shell
-VERSION=3.20.3
+VERSION='replace-with-release-version'
 ARCH=x64   # or arm64
 curl -fLO "https://github.com/Cratis/DirectPublic/releases/download/v$VERSION/direct-runner-$VERSION-linux-$ARCH.tar.gz"
 curl -fLO "https://github.com/Cratis/DirectPublic/releases/download/v$VERSION/checksums.txt"
@@ -108,7 +115,9 @@ direct-runner install
 loginctl enable-linger "$USER"   # keep it running when you are not logged in
 ```
 
-This writes and enables `~/.config/systemd/user/direct-runner.service`. Follow its log with
+Run `install` as your normal user, without `sudo`. It writes and enables
+`~/.config/systemd/user/direct-runner.service`, starts it and restarts it if it stops. `enable-linger` lets the
+user service keep running after logout; your system may require administrator approval. Follow its log with
 `journalctl --user -u direct-runner -f`.
 
 If you installed with Homebrew, use `brew services start direct-runner` instead. Use only one service manager.
@@ -139,37 +148,6 @@ systemctl --user enable --now direct-runner
 
 Follow its log with `journalctl --user -u direct-runner -f`.
 
-## Windows
-
-### From the download
-
-In PowerShell:
-
-```powershell
-$version = "3.20.3"
-$arch = "x64"   # or arm64
-Invoke-WebRequest "https://github.com/Cratis/DirectPublic/releases/download/v$version/direct-runner-$version-win-$arch.zip" -OutFile direct-runner.zip
-Expand-Archive direct-runner.zip -DestinationPath "$env:LOCALAPPDATA\direct-runner"
-```
-
-Start it with `& "$env:LOCALAPPDATA\direct-runner\direct-runner.exe"`. If Windows SmartScreen warns about the
-file, check its checksum against `checksums.txt` (`Get-FileHash direct-runner.zip`) before choosing to run it.
-
-### Start the runner at login
-
-`direct-runner install` is not available on Windows; use the scheduled task below.
-
-Create a scheduled task that starts the runner when you sign in:
-
-```powershell
-$action = New-ScheduledTaskAction -Execute "$env:LOCALAPPDATA\direct-runner\direct-runner.exe"
-$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
-Register-ScheduledTask -TaskName "Direct Agent Runner" -Action $action -Trigger $trigger -Settings $settings
-```
-
-Start it now with `Start-ScheduledTask -TaskName "Direct Agent Runner"`. Docker Desktop must also start at login.
-
 ## Enroll the runner with a code
 
 To start the runner already enrolled, pass a code a maintainer created under **Settings → Runners → Add runner**:
@@ -178,12 +156,24 @@ To start the runner already enrolled, pass a code a maintainer created under **S
 direct-runner --enroll ABCD-EFGH-2345-6789-JKMN-PQRS
 ```
 
-The runner saves the code in `runner.json` only until it has used it, then removes it. See [Enroll without a browser](./getting-started.md#enroll-without-a-browser).
+The code above is made up; replace it with the maintainer's code. Stop any existing daemon before running
+this foreground command. For a downloaded runner's login service, use `direct-runner install --enroll <code>`
+instead, replacing `<code>` with that code. Do not use `install` for a Homebrew-managed runner.
+
+Only `install` writes a newly supplied code to `runner.json`. A foreground run's argument or environment code
+is not written there. A code already in the file is removed after successful enrollment or permanent refusal;
+transient failures are retried. See [Enroll without a browser](./getting-started.md#enroll-without-a-browser).
+
+Before running work, approve each worker image locally by its exact repository and SHA-256 digest. Use
+`--allow-image <repository@sha256:digest>` on a foreground run or on `install`, replacing the placeholder with
+a real, approved digest reference. Repeat the option for multiple images; a supplied list replaces the saved
+list. An empty list refuses every worker. Enrollment and a connection alone do not guarantee work eligibility.
 
 ## Verify the installation
 
-Start the runner and open `http://127.0.0.1:7190`. The runner's page opens. Continue with
-[Get started](./getting-started.md#3-connect-it-to-direct) to connect it.
+Start the runner, then run `direct-runner open` as the same user. Open the one-time address it prints within
+a minute. The page is at `http://127.0.0.1:7190` by default, but opening that address directly does not
+authenticate you. Continue with [Get started](./getting-started.md#3-connect-it-to-direct) to enroll it.
 
 ## Check the runner
 
@@ -192,8 +182,8 @@ direct-runner status
 ```
 
 This shows whether the login service is installed and running, and whether the runner is connected to Direct.
-While it is waiting for approval, it shows the approval code and link. If it is not connected, it shows the local
-page to open.
+It also reports whether new work is paused and how many worker images are allowed when the daemon answers.
+It does not print an enrollment code or an approval link. Use `direct-runner open` for authenticated page access.
 
 ## Update the runner
 
@@ -201,12 +191,14 @@ Install the new version over the old one and restart the runner. The runner keep
 
 ## Uninstall the runner
 
-1. In Direct, open **Settings → Runners** and remove the runner. Its token stops working at once. Selecting
-   **Disconnect this machine** on the runner's page only makes this machine forget its identity. Direct still lists the runner until you remove it.
+1. In Direct, open **Settings → Runners** and remove the runner to revoke its authority for new work. If you
+   also want to erase local credentials, select **Disconnect this machine** on the authenticated local page
+   before stopping the daemon. Disconnecting locally does not remove the runner's listing in Direct.
 2. Stop and remove the login service with `direct-runner uninstall`, or use `brew services stop direct-runner`
-   if Homebrew manages it. On Windows, stop the scheduled task. Then remove the program
+   if Homebrew manages it. Then remove the program
    (`brew uninstall direct-runner`, or delete the file). `direct-runner uninstall` keeps the identity and settings
-   in `~/.cratis/direct`. For a hand-written systemd unit, disable it with `systemctl --user disable --now direct-runner`
+   and credentials in `~/.cratis/direct` (or the macOS Keychain). For a hand-written systemd unit, disable it with `systemctl --user disable --now direct-runner`
    and remove the unit yourself; `uninstall` only removes a service it wrote.
-3. If you also want to remove the identity and settings, delete the runner's folder `~/.cratis/direct`
-   (see [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files)).
+3. After disconnecting, optionally delete the remaining state folder `~/.cratis/direct` to remove settings.
+   Deleting the folder alone does not remove credentials from the macOS Keychain. See
+   [Where the runner keeps its files](./configuring.md#where-the-runner-keeps-its-files).

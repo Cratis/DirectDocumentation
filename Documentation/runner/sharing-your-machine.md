@@ -16,9 +16,10 @@ Run this as the user who runs the runner, without `sudo`:
 direct-runner pause
 ```
 
-Workers that are running finish. The runner starts no new work, and Direct sends new work to another runner
-or the cluster once it receives the next report, within about ten seconds. The runner also refuses new work
-during that reporting delay.
+Pausing does not stop running workers. The runner refuses new work immediately, including during the delay
+before Direct receives its next report. Current Direct requests reports every ten seconds; this is not a
+notification deadline if the connection is interrupted. Other eligible runners or the cluster may take new
+work, but fallback is not guaranteed for work with machine-specific requirements.
 
 On the [local page](./configuring.md#the-local-page), **Pause** does the same thing. The page shows why the
 runner is paused. You can also check from a terminal:
@@ -61,6 +62,12 @@ starting and prints what is wrong.
 
 A scheduled pause finishes automatically at the window's end. **Resume** only clears a manual pause: it does
 not override the schedule. The page and `direct-runner status` show when the scheduled pause ends.
+
+## Sleep and wake
+
+Pausing does not keep the machine awake. Sleep/wake recovery is not a tested guarantee: do not assume a
+running worker survives sleep or that work resumes immediately after waking. After wake, check
+`direct-runner status`, Docker and the work's state in Direct before relying on the machine again.
 
 ## Keep cleanup scripts away from runner workers
 
