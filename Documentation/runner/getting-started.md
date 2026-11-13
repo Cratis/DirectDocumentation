@@ -1,15 +1,15 @@
 ---
 title: Get started with the Direct Agent Runner
-description: Install the Direct Agent Runner, start it, connect it to Direct, approve it as a maintainer, and check that it is connected, in about five minutes.
+description: Install the Direct Agent Runner on macOS or Linux, enroll it with a maintainer-created code, and check its connection and worker prerequisites.
 ---
 
-In this tutorial you install the runner, connect it to Direct and approve it. When you finish, your
-machine is one of your organization's runners.
+In this tutorial you install the runner and enroll it with a maintainer-created code. When you finish, your
+machine is one of your organization's runners. Enrollment does not by itself authorize worker images.
 
 ## Before you begin
 
 - Docker is installed and running. Check with `docker info`.
-- You can sign in to Direct as a maintainer of your organization. Only maintainers can approve a runner.
+- You or someone helping you can sign in to Direct as a maintainer of your organization to create an enrollment code.
 
 ## 1. Install the runner
 
@@ -23,72 +23,51 @@ brew tap cratis/cratis
 brew install direct-runner
 ```
 
-**Windows (PowerShell)**
+## 2. Get an enrollment code
 
-```powershell
-$version = (Invoke-RestMethod https://api.github.com/repos/Cratis/DirectPublic/releases/latest).tag_name.TrimStart('v')
-Invoke-WebRequest "https://github.com/Cratis/DirectPublic/releases/download/v$version/direct-runner-$version-win-x64.zip" -OutFile direct-runner.zip
-Expand-Archive direct-runner.zip -DestinationPath "$env:LOCALAPPDATA\direct-runner"
-```
-
-## 2. Start the runner
-
-```shell
-direct-runner
-```
-
-On Windows, run `& "$env:LOCALAPPDATA\direct-runner\direct-runner.exe"`.
-
-The runner prints one line and keeps running:
-
-```text
-Direct runner 3.20.3 - open http://127.0.0.1:7190 to connect it to Direct
-```
+Ask a maintainer to create a code as described below. Stop any existing runner daemon before starting a
+foreground run; do not run a second copy alongside a login service.
 
 ## 3. Connect it to Direct
 
-Open [http://127.0.0.1:7190](http://127.0.0.1:7190). The runner's page asks for the address of your Direct.
-It is filled in with `https://cratis.direct`. Change it only if your organization runs its own Direct.
+Use the code flow below on both desktop and headless machines. The local page no longer starts browser
+approval. The default Direct address is `https://cratis.direct`; for another deployment, pass
+`--Runner:DirectUrl=https://direct.example` with the enrollment command, replacing the made-up address.
 
-![The Direct runner page before it is connected, with the Direct address and a Connect to Direct button](./images/local-not-connected.png)
+## Enroll without a browser
 
-Select **Connect to Direct**. The runner asks Direct to approve this machine and shows a code. It also opens
-Direct's approval page in a new browser tab.
+A maintainer creates a single-use code in Direct, and you start the runner with it. No browser is needed on
+the runner machine.
 
-![The Direct runner page waiting for approval, showing the code K7QF-93MD and an Approve in Direct button](./images/local-awaiting-approval.png)
+1. In Direct, open **Settings → Runners**, select **Add runner**, optionally enter a name, and choose how long the code is valid: 1, 8 or 24 hours. Select **Create code**.
+2. Copy the code. Direct shows it once and keeps only a hash of it, so it cannot show it again.
+3. On the machine, start the runner with the code:
 
-The code works for a limited time. The page shows when it stops working. If it expires, select **Connect
-to Direct** again for a new one.
+   ```shell
+   direct-runner --enroll ABCD-EFGH-2345-6789-JKMN-PQRS
+   ```
 
-## 4. Approve it in Direct
+The code above is made up; replace it with the code you received. The runner enrolls itself and uses the
+chosen name, or its host name if no name was chosen. There is no further approval step. A code authorizes
+one machine, expires after its chosen lifetime and can be revoked. Direct also checks that the issuing
+maintainer still has enrollment authority.
 
-In the tab that opened, sign in to Direct if asked. The **Approve a runner** dialog opens, or select **Approve in
-Direct** on the runner's page to open it again.
+For a downloaded runner managed by a login service, use `direct-runner install --enroll <code>` instead.
+Do not use this command for a Homebrew-managed runner. See [Install the runner](./installing.md#enroll-the-runner-with-a-code).
 
-![Direct's Approve a runner dialog showing the code, the machine, its system, where it asked from, a name field and a Runs for field](./images/direct-approve-runner.png)
+## 4. Check that it is connected
 
-1. Check that the **Code** matches the one on your runner's page, and that **Machine** and **Asked from** are
-   yours. Only approve a code you see on your own machine.
-2. Change **Name** to something you will recognize. It defaults to the machine's host name.
-3. Leave **Runs for** on *Everyone*, or choose the people whose work this runner takes. You can change this later.
-4. Select **Approve**.
+In another terminal, as the same user, run `direct-runner status`. Run `direct-runner open` and open the
+one-time address it prints within a minute to view the local page. It shows **Connected** once the daemon
+has connected. Opening `http://127.0.0.1:7190` directly does not authenticate you.
 
-You can also reach the dialog yourself: in Direct, open **Settings → Runners** and open the link with the code.
+In Direct, open **Settings → Runners** to check its connection and resource reports.
 
-## 5. Check that it is connected
-
-Your runner's page changes to **Connected**.
-
-![The Direct runner page connected, showing the runner's name, the organization, the number of running workers and the Direct address](./images/local-connected.png)
-
-In Direct, **Settings → Runners** lists the runner next to the built-in Direct cluster, with a green dot, its
-operating system and how much of its CPU, memory and disk is in use.
-
-![Direct's Runners settings listing the Direct cluster and two connected runners with their processor, memory and disk meters](./images/direct-runners.png)
-
-From now on, work that Direct schedules for the people your runner runs for starts on your machine whenever it
-has the most room. You can watch the worker containers appear with `docker ps`; their names start with
-`cratis-ai-agent-`.
+Before it can start work, allow the required worker images locally by digest; see
+[Install the runner](./installing.md#enroll-the-runner-with-a-code). Direct also checks enrolled capabilities,
+who the runner runs for, availability, protocol and capacity. It does not send every job to the machine
+with the most room regardless of those checks. You can watch workers with `docker ps`; their names start
+with `cratis-ai-agent-`.
 
 ## Next steps
 
