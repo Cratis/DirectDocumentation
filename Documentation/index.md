@@ -12,5 +12,6 @@ install, run or configure yourself.
 | Topic | What it covers |
 | --- | --- |
 | [Direct Agent Runner](./runner/index.md) | Run Direct's agents on your own machine instead of the Direct cluster. Install it on macOS, Linux or Windows, connect it to Direct and choose whose work it runs. |
+| [Connect to Direct over MCP](./mcp/index.md) | Let an AI agent or script on your machine work in Direct as you, with a personal access token. Create the token, configure your client and see which tools it can call. |
 
 More topics arrive here as further parts of Direct become public.
