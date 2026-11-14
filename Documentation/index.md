@@ -12,5 +12,6 @@ install, run or configure yourself.
 | Topic | What it covers |
 | --- | --- |
 | [Direct Agent Runner](./runner/index.md) | Run Direct's agents on your own machine instead of the Direct cluster. Install it on macOS, Linux or Windows, connect it to Direct and choose whose work it runs. |
+| [Connect Forgejo](./forgejo/index.md) | Connect a Forgejo organization on Codeberg or your own server to Cratis Direct with a personal access token or an OAuth login, and choose whether each agent gets its own account. |
 
 More topics arrive here as further parts of Direct become public.
