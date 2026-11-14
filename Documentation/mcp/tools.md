@@ -38,7 +38,7 @@ These tools need the `direct:read` scope and change nothing.
 
 | Tool | Scope | What it does |
 | --- | --- | --- |
-| `direct_issue_file` | `direct:write` | Files an issue in a repository of your organization. It checks for likely duplicates first and files nothing until you choose to link or file anyway. `direct:work` is also accepted, but is deprecated for this tool. |
+| `direct_issue_file` | `direct:write` | Files an issue in a repository of your organization. It checks for likely duplicates first. With no likely duplicates it files the issue; otherwise it returns the candidates and files nothing until you call it again to link or file anyway. `direct:work` is also accepted, but is deprecated for this tool. |
 | `direct_issue_comment` | `direct:work` | Comments on an issue. |
 | `direct_issue_label` | `direct:work` | Sets the complete list of labels on an issue. Labels you leave out are removed, so read the existing labels first. |
 | `direct_journey_start` | `direct:write` | Asks Direct to start governed work on an issue. If the request needs a higher ceiling than you may set, nothing starts and the tool returns a link for an eligible person to approve. `direct:work` is also accepted, but is deprecated for this tool. |

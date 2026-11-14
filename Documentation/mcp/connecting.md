@@ -100,8 +100,8 @@ Ask the client to list its MCP tools. Tool names start with `direct_`. Read tool
 
 ## Revoke a token
 
-Open **My profile**, find the token in **Personal access tokens** and select **Revoke**. Confirm **Revoke** for that
-token. Anything using it stops working. Direct remembers a successful check for up to 60 seconds, so a revoked token
+Open **My profile**, find the token in **Personal access tokens** and select **Revoke**, then select **Yes** to
+confirm. Anything using it stops working. Direct remembers a successful check for up to 60 seconds, so a revoked token
 can still be accepted for up to a minute. An expired token shows **Expired** in the list and stops working.
 
 ## Troubleshooting
