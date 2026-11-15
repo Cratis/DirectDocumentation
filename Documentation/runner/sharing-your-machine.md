@@ -1,6 +1,6 @@
 ---
 title: Share your machine with Direct
-description: Pause the runner, set the hours it stays out of your way, and keep cleanup scripts away from its worker containers.
+description: Pause the Direct Agent Runner, set the hours it stays out of your way, and keep cleanup scripts away from its worker containers.
 ---
 
 When you need your machine back, pause the runner instead of stopping its workers. You can also set the hours
