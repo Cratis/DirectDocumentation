@@ -20,6 +20,10 @@ for this. The runner executes Direct's work on your machine; MCP access lets you
 3. The client lists Direct's tools. Each tool needs a scope, and Direct refuses a call the token's scopes do not allow.
 4. Every call that changes something needs an idempotency key, so a retry does not repeat the change.
 
+Besides tools, Direct offers prompts that start common tasks, such as triaging an issue or planning content, and
+read-only resources, such as your outstanding work and the product map. What a resource returns depends on the
+token's scopes and on what you can see in Direct.
+
 A token never approves anything. A request for approval always waits for a person in Direct.
 
 ## Pages in this section
@@ -27,4 +31,4 @@ A token never approves anything. A request for approval always waits for a perso
 | Page | What it covers |
 | --- | --- |
 | [Connect a client](./connecting.md) | Create a token, point your client at Direct, keep the token safe, revoke it and fix a rejected token. |
-| [Tools](./tools.md) | The tools Direct offers over MCP, and the scope each one needs. |
+| [Tools](./tools.md) | The tools, prompts and resources Direct offers over MCP, and the scope each tool needs. |
