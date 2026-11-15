@@ -1,0 +1,6 @@
+- name: Overview
+  href: index.md
+- name: Connect a client
+  href: connecting.md
+- name: Tools
+  href: tools.md

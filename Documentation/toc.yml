@@ -2,3 +2,5 @@
   href: index.md
 - name: Agent Runner
   href: runner/toc.yml
+- name: MCP
+  href: mcp/toc.yml
