@@ -115,4 +115,6 @@ scopes and on what you can see in Direct.
 ## Runner enrollment
 
 A runner is enrolled with a single-use code you create in Direct under **Settings → Runners**, as
-[Get started with the runner](../runner/getting-started.md) describes. There is no MCP tool for it.
+[Get started with the runner](../runner/getting-started.md) describes. There is no MCP tool for
+creating these codes. The separate `direct_runner_enrol_start` tool starts an enrollment that a person
+must approve; it is available to signed-in callers, not to personal access tokens.
