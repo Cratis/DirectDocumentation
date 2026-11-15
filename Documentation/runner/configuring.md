@@ -1,6 +1,6 @@
 ---
 title: Configure the Direct Agent Runner
-description: Settings for the runner's ports, concurrency, Docker endpoint and files folder, how to connect and disconnect it, and how to choose whose work it runs.
+description: Settings for the runner's ports, workers, reserves, capabilities, local sources and files, how to enroll and disconnect it, and whose work it runs.
 ---
 
 Use **Direct's Runners settings** to enroll, name and manage the runner. The **local page** shows its state
@@ -14,14 +14,14 @@ address does not authenticate you. Never share the one-time address. The page sh
 
 | State | What you see | What you can do |
 | --- | --- | --- |
-| Not connected | **Not connected** | Restart with a maintainer-created enrollment code. |
-| Enrollment needed | **Enrollment requires a maintainer-created code** | Use [code enrollment](./getting-started.md#enroll-without-a-browser), not browser approval. |
-| Connecting | **Connecting to Direct...** | Wait. The runner retries with a growing delay of up to one minute. |
-| Connected | The runner's name, organization, running workers, Direct address and whether it takes work | Pause or resume new work, or disconnect the machine. |
+| Not connected | **Not connected** | Restart with an enrollment code. |
+| Enrollment needed | **Enrollment requires a maintainer-created code** | Use [code enrollment](./getting-started.md#enroll-without-a-browser), not browser approval. Any active member can create a code for a runner that runs only their own work. |
+| Connecting | **Connecting to Cratis Direct...** | Wait. The runner retries with a growing delay of up to one minute. |
+| Connected | **Runner**, **Organization**, **Workers**, **Work** (taking work or paused), **Images** (how many are allowed), **Credentials** (the credential store) and the **Cratis Direct** address | Select **Pause** or **Resume** for new work, or disconnect the machine. |
 | Not a runner any more | A message that the credential expired or was revoked | Enroll again with a new code. |
 
 **Disconnect this machine** makes the machine forget its identity so you can connect it again from scratch. It
-does not remove the runner in Direct. Remove it under **Settings → Runners** for that.
+is shown in every state except **Not connected**. It does not remove the runner in Direct. Remove it under **Settings → Runners** for that.
 
 ## Direct's Runners settings
 
@@ -42,7 +42,15 @@ This is how you keep a personal machine for your own work, or put a shared build
 
 ### Add a runner with a code
 
-Select **Add runner**, optionally enter a name, choose how long the code stays valid and select **Create code**. Direct shows the code once, with the command to run on the machine. Codes that nobody has used yet are listed under **Waiting for a machine**, with the time left and who created them. Select **Revoke** to stop one from working.
+Select **Add runner**, choose the kind of machine, optionally enter a name, choose how long the code stays
+valid and select **Create code**. Direct shows the code once. Any active member of the organization can
+create a code. A runner enrolled with a member's code runs work only for that member and is enrolled with the
+minimal capability set; only a maintainer can enroll a runner with more. The person who created the code must
+stay an active member; when they are removed, the runner stops receiving work.
+
+Codes that nobody has used yet are listed with the time left. Maintainers see every waiting code under
+**Waiting for a machine**, with who created it; members see their own. Select **Revoke** to stop one from
+working.
 
 Treat the code like a password. Both `--enroll <code>` and `install --enroll <code>` expose it in process
 arguments and may leave it in shell history. Do not paste real codes into shared terminals, logs or notes.
@@ -87,7 +95,7 @@ codes are not persisted, as described above. The settings listed below are optio
 | `MaximumConcurrentWorkers` | `0` | How many workers run at once. `0` chooses a quarter of the logical cores, and at least one. |
 | `PausedDuring` | No scheduled pauses | Local-time windows when no new work starts, such as `Mon-Fri 08:00-18:00`. See [Share your machine](./sharing-your-machine.md#set-paused-hours). |
 | `DockerEndpoint` | Docker's platform default | The Docker endpoint, when it is not the default one, such as `unix:///home/me/.docker/run/docker.sock`. |
-| `EnrollmentCode` | none | A single-use code a maintainer creates under **Settings → Runners → Add runner**. Used when no identity is saved. Set it with `--enroll <code>` or `DIRECT_RUNNER__Runner__EnrollmentCode`. A saved code is removed after success or permanent refusal; transient failures are retried. |
+| `EnrollmentCode` | none | A single-use code created under **Settings → Runners → Add runner**. Used when no identity is saved. Set it with `--enroll <code>` or `DIRECT_RUNNER__Runner__EnrollmentCode`. A saved code is removed after success or permanent refusal; transient failures are retried. |
 | `Workers:AllowedImages` | Empty | Exact digest-pinned worker images allowed locally. Empty refuses all workers. Use the repeatable `--allow-image <repository@sha256:digest>` option or configure the array in `runner.json`. |
 | `StateDirectory` | `~/.cratis/direct` | The folder the runner keeps its files in. Set it as an argument or environment variable only, since the runner reads the file from there. |
 

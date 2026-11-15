@@ -23,13 +23,14 @@ over HTTPS, and that a proxy or firewall does not block outbound connections.
 
 ## I cannot enroll the runner
 
-Browser-code approval is no longer available. Ask a maintainer to create a single-use code under
-**Settings → Runners → Add runner**, then restart the runner with it. Set `Runner:DirectUrl` before enrollment
+Browser-code approval is no longer available. Create a single-use code under **Settings → Runners → Add
+runner**, or ask a maintainer for one, then restart the runner with it. Any active member can create a code;
+a runner enrolled with a member's code runs work only for that member. Set `Runner:DirectUrl` before enrollment
 if your organization uses a different Direct address. See [Enroll without a browser](./getting-started.md#enroll-without-a-browser).
 
 ## The runner is enrolled but shows as not connected
 
-The runner page says **Connecting to Direct...**, or Direct shows the runner without a green dot.
+The runner page says **Connecting to Cratis Direct...**, or Direct shows the runner without a green dot.
 
 - Check the machine still reaches Direct. The runner retries with a delay of up to one minute.
 - Check the runner is running. A stopped runner shows as not connected in Direct.
@@ -53,6 +54,8 @@ A connection is necessary but not sufficient for work placement. Check:
 
 - **Who it runs for.** In **Settings → Runners**, the runner's audience may not include the person whose work is scheduled.
   See [Choose who a runner runs for](./configuring.md#choose-who-a-runner-runs-for).
+- **Who enrolled it.** The person who created the runner's enrollment code must still be an active member of
+  the organization. When they are removed, the runner stops receiving work.
 - **Availability.** A manual or scheduled pause, a maintainer hold or a quarantine can exclude the runner.
 - **Capabilities.** The runner must meet the work's requirements within its enrolled capability ceiling.
 - **Images.** Worker images must be allowed locally by exact repository and SHA-256 digest. An empty allow-list refuses all workers.
@@ -81,7 +84,7 @@ The runner starts each worker as a Docker container, named `cratis-ai-agent-` fo
 | Direct did not accept the enrollment code | Check the code for typing mistakes, and that the runner points at the right Direct. |
 | The enrollment code has expired | Create a new code under **Settings → Runners → Add runner**. |
 | The enrollment code was already used | Codes work once. Create a new one. |
-| The enrollment code was revoked | A maintainer revoked it. Create a new one. |
+| The enrollment code was revoked | The person who created it, or a maintainer, revoked it. Create a new one. |
 | This machine is already a runner in Direct | Remove the runner in Direct, disconnect the machine, and enroll again. |
 | This Direct does not accept enrollment codes | Your Direct is older than the runner. Update Direct, then restart the runner; it keeps the code until then. |
 
@@ -90,7 +93,7 @@ The runner removes a code that Direct accepted or refused for good. If Direct co
 ## Start over
 
 To reset a runner, remove it under **Settings → Runners**, then select **Disconnect this machine** on the
-authenticated local page. Restart with a new maintainer-created enrollment code. Disconnecting removes the
+authenticated local page. Restart with a new enrollment code. Disconnecting removes the
 local identity and stored credentials; deleting `identity.json` alone is not credential cleanup.
 
 ## Get help

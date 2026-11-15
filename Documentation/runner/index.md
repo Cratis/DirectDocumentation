@@ -12,7 +12,7 @@ gives you, a fast local disk, or access to a network you control.
 
 ## How it works
 
-1. You install the runner. A maintainer creates a single-use enrollment code under **Settings → Runners → Add runner**.
+1. You install the runner. You, or a maintainer, create a single-use enrollment code under **Settings → Runners → Add runner**.
 2. You start the runner with that code. No browser or further approval is needed on the runner machine.
 3. You allow worker images locally by their exact repository and SHA-256 digest. An empty allow-list refuses all workers.
 4. Direct checks enrolled capabilities, who the runner runs for, availability, protocol and capacity before
@@ -39,10 +39,12 @@ Linux so containers can reach it. Do not expose either port to other machines.
 A runner is handed the credentials of every piece of work it runs. Treat the machine like any other place
 you keep your organization's secrets.
 
-- **Only a maintainer can create an enrollment code.** Create one only for a machine you control and trust.
+- **Any active member can create an enrollment code.** A runner enrolled with a member's code runs work only
+  for that member and is enrolled with the minimal capability set. Only a maintainer can enroll a runner for
+  more people or with more capabilities. Create a code only for a machine you control and trust.
 - **The local page requires authentication.** Run `direct-runner open` as the daemon's user and open the
   one-time address it prints within a minute. Do not share that address or the local authentication files.
-- **An enrollment code works once.** A maintainer creates it, Direct stores only a hash of it, it stops working when it expires or is revoked, and the runner removes it from its settings after use. Only create a code for a machine you control, and treat it like a password until it is used.
+- **An enrollment code works once.** Direct stores only a hash of it, it stops working when it expires or is revoked, and the runner removes it from its settings after use. Only create a code for a machine you control, and treat it like a password until it is used.
 - **Removing a runner revokes its authority for new work.** Do not rely on removal to stop containers
   already running on the machine.
 

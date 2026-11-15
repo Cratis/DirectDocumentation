@@ -1,15 +1,17 @@
 ---
 title: Get started with the Direct Agent Runner
-description: Install the Direct Agent Runner on macOS or Linux, enroll it with a maintainer-created code, and check its connection and worker prerequisites.
+description: Install the Direct Agent Runner on macOS or Linux, enroll it with a single-use code you create in Cratis Direct, and check its connection and worker setup.
 ---
 
-In this tutorial you install the runner and enroll it with a maintainer-created code. When you finish, your
-machine is one of your organization's runners. Enrollment does not by itself authorize worker images.
+In this tutorial you install the runner and enroll it with a single-use code. When you finish, your machine
+is one of your organization's runners. Enrollment does not by itself authorize worker images.
 
 ## Before you begin
 
 - Docker is installed and running. Check with `docker info`.
-- You or someone helping you can sign in to Direct as a maintainer of your organization to create an enrollment code.
+- You can sign in to Cratis Direct as an active member of your organization to create an enrollment code.
+  A runner enrolled with a member's code runs work only for that member. To enroll a runner that runs work
+  for others, ask a maintainer to create the code.
 
 ## 1. Install the runner
 
@@ -25,8 +27,8 @@ brew install direct-runner
 
 ## 2. Get an enrollment code
 
-Ask a maintainer to create a code as described below. Stop any existing runner daemon before starting a
-foreground run; do not run a second copy alongside a login service.
+Create a code as described below, or ask a maintainer for one. Stop any existing runner daemon before
+starting a foreground run; do not run a second copy alongside a login service.
 
 ## 3. Connect it to Direct
 
@@ -36,10 +38,11 @@ approval. The default Direct address is `https://cratis.direct`; for another dep
 
 ## Enroll without a browser
 
-A maintainer creates a single-use code in Direct, and you start the runner with it. No browser is needed on
-the runner machine.
+You create a single-use code in Direct, and you start the runner with it. No browser is needed on the
+runner machine.
 
-1. In Direct, open **Settings → Runners**, select **Add runner**, optionally enter a name, and choose how long the code is valid: 1, 8 or 24 hours. Select **Create code**.
+1. In Direct, open **Settings → Runners** and select **Add runner**. Choose the kind of machine, optionally
+   enter a name, and choose how long the code is valid: 1, 8 or 24 hours. Select **Create code**.
 2. Copy the code. Direct shows it once and keeps only a hash of it, so it cannot show it again.
 3. On the machine, start the runner with the code:
 
@@ -49,13 +52,19 @@ the runner machine.
 
 The code above is made up; replace it with the code you received. The runner enrolls itself and uses the
 chosen name, or its host name if no name was chosen. There is no further approval step. A code authorizes
-one machine, expires after its chosen lifetime and can be revoked. Direct also checks that the issuing
-maintainer still has enrollment authority.
+one machine, expires after its chosen lifetime and can be revoked. The person who created the code must
+stay an active member of the organization; if they are removed, the runner stops receiving work.
 
 For a downloaded runner managed by a login service, use `direct-runner install --enroll <code>` instead.
 Do not use this command for a Homebrew-managed runner. See [Install the runner](./installing.md#enroll-the-runner-with-a-code).
 
 ## 4. Check that it is connected
+
+When the runner starts, it prints a line like this:
+
+```text
+Cratis Direct runner 1.2.3 - run `direct-runner open` for status and enrollment instructions (the page is at http://127.0.0.1:7190)
+```
 
 In another terminal, as the same user, run `direct-runner status`. Run `direct-runner open` and open the
 one-time address it prints within a minute to view the local page. It shows **Connected** once the daemon
