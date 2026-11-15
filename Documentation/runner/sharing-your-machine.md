@@ -57,7 +57,7 @@ case-insensitive; use a range such as `Mon-Fri` or a comma-separated list such a
 apply a window every day. `24:00` is allowed only as an end time. The start is included and the end is not.
 
 A window can span midnight. `Fri 22:00-06:00` pauses from Friday at 22:00 until Saturday at 06:00; the day names
-when the window starts. A blank setting means no scheduled pauses. An invalid setting stops the runner from
+are the days the window starts on. A blank setting means no scheduled pauses. An invalid setting stops the runner from
 starting and prints what is wrong.
 
 A scheduled pause finishes automatically at the window's end. **Resume** only clears a manual pause: it does
