@@ -6,5 +6,7 @@
   href: installing.md
 - name: Configure the runner
   href: configuring.md
+- name: Share your machine
+  href: sharing-your-machine.md
 - name: Troubleshooting
   href: troubleshooting.md

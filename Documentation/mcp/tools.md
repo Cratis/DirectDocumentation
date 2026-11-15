@@ -46,6 +46,23 @@ These tools need the `direct:read` scope and change nothing.
 | `direct_question_answer` | `direct:write` | Answers an open agent question waiting on you. `direct:work` is not accepted. |
 | `direct_runner_hold_request` | `direct:write` | Asks to pause or drain a runner. Nothing changes until a different eligible person approves in Direct. |
 
+## Stories
+
+The story tools need the `story:read` or `story:write` scope. The token form in Direct does not offer these
+scopes yet, so a token created there cannot call them.
+
+The tools that change a story also take a `harness` and a `session`: the name of your agent and its local session
+identifier. Direct records them with the change. They are not credentials, and they grant nothing. None of these
+tools starts a journey or approves anything.
+
+| Tool | Scope | What it does |
+| --- | --- | --- |
+| `direct_story_create` | `story:write` | Creates a story as you in 1 to 20 tracked repositories of your organization. |
+| `direct_story_get` | `story:read` | Reads a story. You must have access to every repository the story belongs to. |
+| `direct_story_search` | `story:read` | Searches story titles in a tracked repository. A story you just created may take a moment to appear; read it with the handle `direct_story_create` returned. |
+| `direct_story_update` | `story:write` | Changes a story's title or description. Fields you leave out stay as they are. |
+| `direct_story_file_issue` | `story:write` | Files an issue in one of the story's repositories and links it to the story. The issue reaches the provider shortly afterwards. |
+
 ## Content
 
 | Tool | Scope | What it does |
@@ -63,7 +80,41 @@ These tools need the `direct:read` scope and change nothing.
 | `direct_content_record_published` | `direct:content.write` | Records the URL where a piece was published. |
 | `direct_content_request_draft` | `direct:content.write` and `direct:work` | Requests a generated draft. It starts work that uses AI capacity, so it needs both scopes. |
 
+## Prompts
+
+Direct also offers prompts: ready-made instructions your client can start a conversation with. They use the tools
+above, so each tool they call still needs its scope, and a prompt changes nothing without the tools.
+
+| Prompt | What it does |
+| --- | --- |
+| `plan-content` | Plans a number of LinkedIn posts on a topic, briefs and drafts each one, and asks you to approve them in Direct. |
+| `repurpose-release` | Turns a release Direct knows about into LinkedIn posts grounded in what shipped. |
+| `continue-my-content` | Finds your content pieces that are waiting on you and proposes the next step for each, without changing anything. |
+| `triage-issue` | Triages an issue against product knowledge, and proposes filing, commenting or labeling only after showing you the change. |
+| `plan-journey` | Plans governed work for an issue, and proposes starting a journey only after you confirm. |
+| `product-status-digest` | Drafts a read-only status digest for a product. |
+| `weekly-what-shipped` | Drafts a read-only weekly summary of what shipped for a product. |
+| `release-note-draft` | Drafts user-facing release notes for a release. It publishes nothing. |
+
+## Resources
+
+Resources are read-only documents a client can attach to a conversation. What you can read depends on the token's
+scopes and on what you can see in Direct.
+
+| Resource | What it holds |
+| --- | --- |
+| `direct-content-guide` | How to work with Direct's content tools, with examples. |
+| `direct-my-voices` | The voices you may write in, your own and your organization's. |
+| `direct-my-accounts` | Your publishing accounts. |
+| `direct-my-organizations` | The organizations you can switch to. Needs `direct:read`. |
+| `direct-my-work` | A short glance at what is waiting on you. Needs `direct:read`. |
+| `direct-knowledge-products` | The products you can see and the repositories that make them. |
+| `direct-knowledge-product` | One product with its repositories and its written vision. |
+| `direct-knowledge-glossary` | The Cratis platform glossary. |
+
 ## Runner enrollment
 
-Connecting a runner to Direct is done in the browser, as [Get started with the runner](../runner/getting-started.md)
-describes. There is no MCP tool for everyone to do it.
+A runner is enrolled with a single-use code you create in Direct under **Settings → Runners**, as
+[Get started with the runner](../runner/getting-started.md) describes. There is no MCP tool for
+creating these codes. The separate `direct_runner_enrol_start` tool starts an enrollment that a person
+must approve; it is available to signed-in callers, not to personal access tokens.
