@@ -1,6 +1,6 @@
 ---
 title: Connect a client to Direct over MCP
-description: Create a personal access token in Direct, configure an MCP client with it as a bearer token, keep it out of repositories and prompts, revoke it, and fix a token that is rejected.
+description: Create a personal access token in Direct, use it as a bearer token in an MCP client, keep it out of repositories, revoke it, and fix a rejected token.
 ---
 
 An MCP client connects to Direct with a personal access token. This page shows how to create the token, configure a
