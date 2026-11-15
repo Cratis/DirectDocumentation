@@ -148,15 +148,40 @@ systemctl --user enable --now direct-runner
 
 Follow its log with `journalctl --user -u direct-runner -f`.
 
+### Switch from a unit you wrote
+
+`direct-runner install` refuses to change a unit it did not write, and says the file was not written by
+`direct-runner install`. To let `install` manage the runner
+instead, disable and remove your unit first, then run `install`:
+
+```shell
+systemctl --user disable --now direct-runner
+rm ~/.config/systemd/user/direct-runner.service
+systemctl --user daemon-reload
+direct-runner install
+```
+
+## What `install` refuses
+
+`direct-runner install` stops without changing anything when:
+
+- it runs as root or through `sudo`. Run it as the user who should run the runner.
+- the executable was installed with Homebrew, or Homebrew already manages the service. Use `brew services`.
+- the service file exists and `install` did not write it. See [Switch from a unit you wrote](#switch-from-a-unit-you-wrote).
+- the code given with `--enroll` is not a valid enrollment code. Copy it again.
+- `--enroll` is given but the machine already has a runner identity. Remove the runner in Direct and
+  disconnect the machine first.
+- another runner already answers on the local page port.
+
 ## Enroll the runner with a code
 
-To start the runner already enrolled, pass a code a maintainer created under **Settings → Runners → Add runner**:
+To start the runner already enrolled, pass a code created under **Settings → Runners → Add runner**:
 
 ```shell
 direct-runner --enroll ABCD-EFGH-2345-6789-JKMN-PQRS
 ```
 
-The code above is made up; replace it with the maintainer's code. Stop any existing daemon before running
+The code above is made up; replace it with your code. Stop any existing daemon before running
 this foreground command. For a downloaded runner's login service, use `direct-runner install --enroll <code>`
 instead, replacing `<code>` with that code. Do not use `install` for a Homebrew-managed runner.
 
@@ -184,6 +209,16 @@ direct-runner status
 This shows whether the login service is installed and running, and whether the runner is connected to Direct.
 It also reports whether new work is paused and how many worker images are allowed when the daemon answers.
 It does not print an enrollment code or an approval link. Use `direct-runner open` for authenticated page access.
+
+## List the commands
+
+```shell
+direct-runner help
+```
+
+This lists the runner's commands: `install`, `uninstall`, `status`, `open`, `pause`, `resume` and `help`.
+`--help` and `-h` do the same. Run `direct-runner` without a command to start the runner itself. An unknown
+command prints the usage and exits with code 2.
 
 ## Update the runner
 
