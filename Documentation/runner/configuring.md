@@ -98,6 +98,12 @@ codes are not persisted, as described above. The settings listed below are optio
 | `EnrollmentCode` | none | A single-use code created under **Settings → Runners → Add runner**. Used when no identity is saved. Set it with `--enroll <code>` or `DIRECT_RUNNER__Runner__EnrollmentCode`. A saved code is removed after success or permanent refusal; transient failures are retried. |
 | `Workers:AllowedImages` | Empty | Exact digest-pinned worker images allowed locally. Empty refuses all workers. Use the repeatable `--allow-image <repository@sha256:digest>` option or configure the array in `runner.json`. |
 | `StateDirectory` | `~/.cratis/direct` | The folder the runner keeps its files in. Set it as an argument or environment variable only, since the runner reads the file from there. |
+| `SecretStore` | `Auto` | Where the runner keeps its credentials: `Auto`, `Keychain` or `File`. `Auto` uses the Keychain on macOS and an owner-only file on Linux. `Keychain` is only available on macOS; elsewhere the runner refuses to start. |
+| `Reserve:Memory` | `2GiB` | Memory the runner keeps free for you. See [Keep room for your own work](#keep-room-for-your-own-work). |
+| `Reserve:Disk` | `5GiB` | Free disk space the runner keeps on the volume its workers use. |
+| `Reserve:ClearMargin` | 10% of each reserve, at least 0.5 GiB | How far above a reserve free space must rise before new work starts again. |
+| `Capabilities` | None | What the machine offers workers. See [Declare capabilities](#declare-capabilities). |
+| `LocalSources` | None | Repositories workers can use from this machine. See [Offer local sources](#offer-local-sources). |
 
 A setting comes from the first of these that has it:
 
@@ -113,6 +119,80 @@ direct-runner --Runner:InterfacePort=7290 --Runner:MaximumConcurrentWorkers=2
 The runner prints the address of the local page on start; use `direct-runner open` for authenticated access.
 The local page binds to loopback. The relay also binds to Docker's bridge address on Linux so containers
 can reach it. Change a port when something else on your machine uses it.
+
+### Keep room for your own work
+
+The runner stops starting new workers when free memory, or free disk space on the volume its workers use,
+falls below its reserve. It starts new work again only when both rise above the reserve plus the clear
+margin.
+
+Write each value as a number of bytes, as GiB (`4GiB`) or as a percentage of the machine's total (`10%`). A
+reserve is never more than half of the total, and the point where work starts again is never more than
+halfway from the reserve to the total. When a value is not valid, the runner uses the default or the limit
+instead and prints a warning.
+
+```json
+{
+  "Runner": {
+    "Reserve": {
+      "Memory": "4GiB",
+      "Disk": "10%"
+    }
+  }
+}
+```
+
+### Declare capabilities
+
+`Capabilities` tells Direct what workers can use on this machine. These are claims, not credentials: the
+runner never sends a key or token. Direct places work on the runner only within the capability ceiling it
+was enrolled with.
+
+| Field | What it holds |
+| --- | --- |
+| `Harnesses` | The worker harnesses this machine can run: `claude`, `pi` or `copilot`. |
+| `LocalModels` | Models served on this machine, each with a `Model` name and an `Endpoint` that workers in Docker can reach. The endpoint must be `http` or `https`, with no user name, password or query. |
+| `Credentials` | Which kinds of credential are available, each with a `Provider` (`Anthropic`, `OpenAI`, `AzureOpenAI`, `OpenAICompatible`, `ZAI`, `OpenAICodex` or `Copilot`) and a `Mode` (`api-key`, `oauth` or `subscription`). |
+
+```json
+{
+  "Runner": {
+    "Capabilities": {
+      "Harnesses": ["claude"],
+      "LocalModels": [{ "Model": "example-model", "Endpoint": "http://host.docker.internal:11434" }],
+      "Credentials": [{ "Provider": "Anthropic", "Mode": "api-key" }]
+    }
+  }
+}
+```
+
+Each list holds at most 32 entries. When a value is not valid, the runner refuses to start.
+
+### Offer local sources
+
+`LocalSources` lists repositories workers can use from this machine. Only each source's alias is sent to
+Direct; paths and addresses stay on the machine.
+
+| Field | What it holds |
+| --- | --- |
+| `Alias` | The name Direct sees: up to 64 lowercase letters, digits, `.`, `_` or `-`. Each alias must be unique. |
+| `Kind` | `path` for a repository on this machine, or `remote` for a repository address. |
+| `Root` | For `path`: an absolute folder that holds the repository. It cannot be a drive root, your home folder, or inside the runner's state folder. |
+| `Path` | For `path`: the absolute repository folder inside `Root`. It must contain its own `.git` folder: not a linked worktree, a repository using alternates, or a symbolic link. |
+| `Remote` | For `remote`: an `https` or `ssh` address with no user name, password or query. |
+
+```json
+{
+  "Runner": {
+    "LocalSources": [
+      { "Alias": "website", "Kind": "path", "Root": "/home/me/code", "Path": "/home/me/code/website" },
+      { "Alias": "tools", "Kind": "remote", "Remote": "https://git.example.com/team/tools.git" }
+    ]
+  }
+}
+```
+
+The list holds at most 32 sources. When a source is not valid, the runner refuses to start.
 
 > [!NOTE]
 > The number of workers also changes what Direct sees. A runner reports its maximum, and Direct sends work to
@@ -131,6 +211,7 @@ are owner-only. Keep them private even though the identity file no longer contai
 | `identity.json` | Identity metadata and a reference to its credential store, not the secret token. |
 | `identity.secrets` | Credentials when the file store is used (the Linux default). Treat it like a password. |
 | `interface.token` | Secret used to authenticate the owning user to the local page. Never share it. |
+| `audit.jsonl` | One line per worker launch decision: the time, the runner and session ids, whether the launch was allowed or refused and why, the image digest and the credential store kind. It never holds secrets. At 5 MiB it rotates to `audit.1.jsonl` and so on; the runner keeps five files. |
 
 On macOS, credentials default to the user's Keychain. Failure to use it does not silently fall back to a file.
 Treat all credential-store contents as secrets.
