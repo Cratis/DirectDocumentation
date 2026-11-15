@@ -1,6 +1,6 @@
 ---
 title: Connect to Direct over MCP
-description: Let an AI agent or script on your machine work in Direct as you, over the Model Context Protocol (MCP), with a personal access token that carries only the scopes you choose.
+description: Let an AI agent or script work in Direct as you over the Model Context Protocol (MCP), with a personal access token that carries only the scopes you choose.
 ---
 
 Direct serves a set of tools to AI agents over the Model Context Protocol (MCP). An agent that connects can read
