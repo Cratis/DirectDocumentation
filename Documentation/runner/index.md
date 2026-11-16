@@ -54,4 +54,5 @@ you keep your organization's secrets.
 - [Install the runner](./installing.md) - installation options for macOS and Linux.
 - [Configure the runner](./configuring.md) - settings, and who a runner runs work for.
 - [Share your machine](./sharing-your-machine.md) - pause new work, set paused hours and protect worker containers from cleanup.
+- [Serve local models](./serving-local-models.md) - expose models from Ollama, LM Studio and similar servers on your machine to Cratis Direct, with or without Docker.
 - [Troubleshooting](./troubleshooting.md) - when the runner does not connect or does not take work.

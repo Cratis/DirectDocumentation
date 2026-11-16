@@ -8,5 +8,7 @@
   href: configuring.md
 - name: Share your machine
   href: sharing-your-machine.md
+- name: Serve local models
+  href: serving-local-models.md
 - name: Troubleshooting
   href: troubleshooting.md
