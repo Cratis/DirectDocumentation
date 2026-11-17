@@ -8,5 +8,7 @@
   href: configuring.md
 - name: Share your machine
   href: sharing-your-machine.md
+- name: Providers, harnesses and fallback
+  href: capabilities-and-fallback.md
 - name: Troubleshooting
   href: troubleshooting.md
