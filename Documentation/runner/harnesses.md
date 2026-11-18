@@ -1,6 +1,6 @@
 ---
 title: Build a harness adapter for local sessions
-description: The contract between the Direct Agent Runner and a coding-agent harness in a local session, covering the launch proof file, the checks a harness makes before trusting it, and how it claims, keeps and releases work.
+description: "The contract between the Direct Agent Runner and a coding-agent harness: the launch proof file, the checks a harness makes, and how it claims and releases work."
 ---
 
 A local session runs work on your own machine with a coding-agent harness instead of in a worker container. This page
