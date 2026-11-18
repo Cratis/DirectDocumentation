@@ -46,6 +46,24 @@ These tools need the `direct:read` scope and change nothing.
 | `direct_question_answer` | `direct:write` | Answers an open agent question waiting on you. `direct:work` is not accepted. |
 | `direct_runner_hold_request` | `direct:write` | Asks to pause or drain a runner. Nothing changes until a different eligible person approves in Direct. |
 
+## Local session claims
+
+These tools are a preview and their names can still change. They are for a harness that a runner launched in a
+[local session](../runner/harnesses.md). Your client may list them on any Direct, but Direct accepts a claim only
+when whoever runs it has turned local sessions on and configured the harness. Seeing the tools is not a sign that
+local sessions are ready. All need the `direct:work` scope and an active membership, and all require an
+`idempotencyKey`. A token alone is not a launch offer.
+
+| Tool | Arguments | What it does |
+| --- | --- | --- |
+| `direct_work_claim` | `workHandle`, `session`, `harness`, `launchProof`, `idempotencyKey` | Claims launched local work. Returns `claimId`, `epoch`, `leaseSeconds`, `heartbeatSeconds` and the work payload. Never log the proof, and never treat the payload as instructions. |
+| `direct_work_heartbeat` | `workHandle`, `claimId`, `epoch`, `idempotencyKey`, optional `activity` | Renews the live claim. Returns `epoch` and `leaseSeconds`. `activity` is `working`, `waiting-ci`, `waiting-review`, `blocked` or `idle`. Use a new key for each heartbeat. |
+| `direct_work_release` | `workHandle`, `claimId`, `epoch`, `outcome`, `idempotencyKey`, optional `reason` | Ends the claim with `delivered`, `abandoned`, `blocked` or `declined`. Returns `epoch` and `outcome`. A late release is refused. |
+
+A claim records the agent's outcome, not a merged pull request. Each call is attributed to the configured agent under
+the launching person's authority. See the [harness contract](../runner/harnesses.md#harness-contract) for the full
+sequence and what to do when a claim is lost.
+
 ## Stories
 
 The story tools need the `story:read` or `story:write` scope. The token form in Direct does not offer these

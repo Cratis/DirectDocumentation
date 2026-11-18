@@ -8,5 +8,7 @@
   href: configuring.md
 - name: Share your machine
   href: sharing-your-machine.md
+- name: Build a harness adapter
+  href: harnesses.md
 - name: Troubleshooting
   href: troubleshooting.md

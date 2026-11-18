@@ -39,11 +39,17 @@ The token acts as you, in the organization it was created in.
 
 ## Connect your client
 
-Every client sends the token in an `Authorization` header:
+Every client sends the token in an `Authorization` header and your tenant id in an `x-cratis-tenant-id` header:
 
 ```text
 Authorization: Bearer <personal access token>
+x-cratis-tenant-id: <your tenant id>
 ```
+
+Direct refuses a request that has no tenant header, more than one value, or a malformed value. Send no other identity
+or session headers, such as `x-cratis-token-scope`: Direct refuses those even beside a valid token. A token's scopes
+come from the token itself. If you do not know your tenant id, ask whoever runs your Direct. The examples use the
+made-up id `acme-tenant`; replace it with your own.
 
 Put the token in an environment variable and have the client read it from there. The examples use `DIRECT_TOKEN`.
 Read it without echoing it so it stays out of your shell history, or load it from your password manager:
@@ -63,7 +69,10 @@ itself is not in the file:
     "direct": {
       "type": "http",
       "url": "https://<your Direct address>/mcp",
-      "headers": { "Authorization": "Bearer ${DIRECT_TOKEN}" }
+      "headers": {
+        "Authorization": "Bearer ${DIRECT_TOKEN}",
+        "x-cratis-tenant-id": "acme-tenant"
+      }
     }
   }
 }
@@ -77,12 +86,32 @@ Add the server to `~/.codex/config.toml` and name the variable that holds the to
 [mcp_servers.direct]
 url = "https://<your Direct address>/mcp"
 bearer_token_env_var = "DIRECT_TOKEN"
+http_headers = { "x-cratis-tenant-id" = "acme-tenant" }
+```
+
+### pi
+
+Add the server by hand to `~/.pi/agent/mcp.json`, or to `.pi/mcp.json` in a trusted project. pi expands
+`${DIRECT_TOKEN}` when it reads the file:
+
+```json
+{
+  "mcpServers": {
+    "direct": {
+      "url": "https://<your Direct address>/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DIRECT_TOKEN}",
+        "x-cratis-tenant-id": "acme-tenant"
+      }
+    }
+  }
+}
 ```
 
 ### Other clients
 
 Any MCP client that supports streamable HTTP and a static bearer header works. Configure the URL and the
-`Authorization` header as above. A client that can only sign in through a browser cannot connect, because Direct
+`Authorization` and `x-cratis-tenant-id` headers as above. A client that can only sign in through a browser cannot connect, because Direct
 does not run a sign-in for MCP clients.
 
 ## Verify the connection
@@ -110,6 +139,7 @@ can still be accepted for up to a minute. An expired token shows **Expired** in 
 | --- | --- |
 | `404` from the MCP address | The address is wrong, or MCP access is not turned on for your Direct. Check the address, then ask whoever runs your Direct. |
 | `401` | There is no token, or Direct does not accept it: it is mistyped, expired or revoked. Check that `DIRECT_TOKEN` is set in the environment the client starts from. Create a new token if needed. |
+| `401` with no tenant header, or after adding other headers | Direct requires `x-cratis-tenant-id` with exactly one valid value. Add it. If the client adds identity or session headers, remove them and send only `Authorization` and `x-cratis-tenant-id`. |
 | `403` with `insufficient_scope` | The tool needs a scope the token does not have. The response names it. Create a new token with that scope. |
 | `403` with "You are not an active member" | A token only works for an active member of the organization. Ask an administrator to invite you, accept the invitation in Direct, then try again. |
 | `429` or `503` | Direct is checking too many tokens at once. Wait a moment and try again. |
