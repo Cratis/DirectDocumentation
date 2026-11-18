@@ -14,6 +14,7 @@ Documentation/
   runner/            Direct Agent Runner: overview, get started, install, configure, troubleshooting
     images/          Screenshots used by the pages
   mcp/               Connect to Direct over MCP: overview, connect a client, tools
+  forgejo/           Connect Forgejo: Codeberg or your own server, sign-in methods, agent accounts, webhooks
 ```
 
 Each folder has its own `toc.yml`, as in the other Cratis product repositories.
