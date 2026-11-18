@@ -82,8 +82,8 @@ Open the file once, without following links, and make checks 3 to 7 on that open
 Checking the path and then opening it leaves a gap in which another process can swap the file.
 
 1. `DIRECT_LAUNCH_PROOF_FILE` is set and holds an absolute path.
-2. The path is not inside the worktree, after resolving links, and no parent directory of it is writable by anyone
-   except the launching user.
+2. The path is not inside the worktree, after resolving links, and every parent directory of it is owned by the
+   launching user or by the system administrator (root), with no other user able to write to it.
 3. The opened handle is a regular file, not a link, a directory or a device.
 4. The file belongs to the user running the harness.
 5. Nobody except that user can read or write the file.
@@ -116,9 +116,12 @@ heartbeat or release does not bring the claim back, and reconnecting does not le
 refusal does not say why. This keeps the response from telling anyone whether work exists or who holds it.
 
 A transient failure, such as a network error or a response that says to retry, may be retried with the same
-`idempotencyKey` and arguments, but only until the last lease deadline you confirmed (the time of the last successful
-claim or heartbeat plus `leaseSeconds`). After that, stop. When the harness cannot confirm that it still holds the
-lease, it must not keep working.
+`idempotencyKey` and arguments, but only until the last lease deadline you confirmed. Count that deadline from the
+moment you sent the last successful heartbeat, plus `leaseSeconds`, not from when its response arrived. After that,
+stop. When the harness cannot confirm that it still holds the lease, it must not keep working.
+
+A retried claim can answer with the lease it granted the first time, which may already be close to expiry. Before
+starting work, send a heartbeat and wait for it to succeed; only that heartbeat gives a deadline you can rely on.
 
 ## Next steps
 
