@@ -1,6 +1,6 @@
 ---
 title: "Connect Forgejo"
-description: "Connect a Forgejo organization on Codeberg or your own server to Cratis Direct, with a personal access token or an OAuth login, so Cratis Direct can read and work on your issues, pull requests and repositories."
+description: "Connect a Forgejo organization on Codeberg or your own server to Cratis Direct with a personal access token or OAuth, so Direct can work on your repositories."
 ---
 
 # Connect Forgejo
