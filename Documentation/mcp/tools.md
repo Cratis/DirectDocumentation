@@ -49,8 +49,9 @@ These tools need the `direct:read` scope and change nothing.
 ## Local session claims
 
 These tools are a preview and their names can still change. They are for a harness that a runner launched in a
-[local session](../runner/harnesses.md), and they appear only when whoever runs your Direct has turned local sessions
-on and configured the harness. All need the `direct:work` scope and an active membership, and all require an
+[local session](../runner/harnesses.md). Your client may list them on any Direct, but Direct accepts a claim only
+when whoever runs it has turned local sessions on and configured the harness. Seeing the tools is not a sign that
+local sessions are ready. All need the `direct:work` scope and an active membership, and all require an
 `idempotencyKey`. A token alone is not a launch offer.
 
 | Tool | Arguments | What it does |

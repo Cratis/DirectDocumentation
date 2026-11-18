@@ -24,6 +24,10 @@ harness, what the harness must check, and how it claims work from Direct.
 The harness never holds the runner's credential. It holds only the personal access token of the person who launched
 the work. See [Connect a client](../mcp/connecting.md) to create one.
 
+Store that token in the operating system keychain, scoped to the Direct address and the tenant. Do not export it into
+the environment of the harness, and do not pass it to child processes or to anything the model controls. The harness
+process itself reads it and adds the headers to its own requests.
+
 ## Harness contract
 
 ### What the runner delivers
@@ -59,7 +63,9 @@ harness yourself.
 ### Lifetime of the proof
 
 The proof is for one claim. Read the file once, when the session starts, and delete it straight after reading. Keep
-the proof only in memory, and drop it once the claim succeeds or fails.
+the proof only in memory. A claim can fail in a way that Direct says to retry, and a retry must repeat the same
+`idempotencyKey` and arguments, including the proof. Keep the proof through retries of the same claim, and discard it
+after the claim succeeds or Direct definitively refuses it.
 
 A missing proof file is final. It means the launch expired or was already used. Do not look for another copy. Ask for
 a new offer from Direct.
@@ -72,14 +78,18 @@ yet, so do not rely on it.
 Make every check in order, and refuse to start the session when any one fails. A harness that cannot verify the
 file must not claim.
 
+Open the file once, without following links, and make checks 3 to 7 on that open handle rather than on the path.
+Checking the path and then opening it leaves a gap in which another process can swap the file.
+
 1. `DIRECT_LAUNCH_PROOF_FILE` is set and holds an absolute path.
-2. The path is not inside the worktree, after resolving links.
-3. The path is a regular file, not a link, a directory or a device.
+2. The path is not inside the worktree, after resolving links, and no parent directory of it is writable by anyone
+   except the launching user.
+3. The opened handle is a regular file, not a link, a directory or a device.
 4. The file belongs to the user running the harness.
 5. Nobody except that user can read or write the file.
 6. The file is exactly 64 bytes.
 7. Every byte is a lowercase hexadecimal digit.
-8. Read the file once and delete it. A failed delete is a refusal, not a warning.
+8. Read the proof from the same handle and delete the file. A failed delete is a refusal, not a warning.
 9. The proof never reaches an environment variable, a command-line argument, a log, or anything the model can read.
 
 ### Claim sequence
@@ -98,10 +108,17 @@ All three tools need the `direct:work` scope and an active membership. Every req
 Retry a claim or release with its original `idempotencyKey` and identical arguments. Reusing a key for different
 arguments is a conflict.
 
-Losing claim authority is final for the session. On `lease-lost`, `stale-epoch` or `cancelled`, stop working
-locally. A later heartbeat or release does not bring the claim back, and reconnecting does not let a harness take the
-work over. A refused claim does not say why. This keeps the response from telling anyone whether work exists or who
-holds it.
+Losing claim authority is final for the session. Stop working locally on any definitive refusal: `lease-lost`,
+`stale-epoch`, `cancelled`, `not-found`, `invalid-state`, `unauthorized`, `forbidden` and `insufficient_scope`. Stop
+also on any response or error code you do not recognize. `not-found` covers unknown or foreign work, and it is also what
+Direct answers once local sessions are turned off, so a heartbeat can start returning it mid-session. A later
+heartbeat or release does not bring the claim back, and reconnecting does not let a harness take the work over. A
+refusal does not say why. This keeps the response from telling anyone whether work exists or who holds it.
+
+A transient failure, such as a network error or a response that says to retry, may be retried with the same
+`idempotencyKey` and arguments, but only until the last lease deadline you confirmed (the time of the last successful
+claim or heartbeat plus `leaseSeconds`). After that, stop. When the harness cannot confirm that it still holds the
+lease, it must not keep working.
 
 ## Next steps
 
