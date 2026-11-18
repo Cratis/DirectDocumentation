@@ -77,6 +77,25 @@ The runner starts each worker as a Docker container, named `cratis-ai-agent-` fo
 - On Linux, workers cannot reach the runner. Workers call back through `host.docker.internal`. The runner also
   listens on Docker's bridge address for this. Check Docker's default bridge network is up.
 
+## A harness session refuses to start
+
+This applies to adapters for [local sessions](./harnesses.md), a preview. A harness refuses to start when a check on the
+launch proof file fails, and Direct refuses a claim it cannot accept.
+
+| What you see | What it means and what to do |
+| --- | --- |
+| The harness refuses the proof file | One of the [numbered checks](./harnesses.md#checks-before-trusting-the-file) failed. Fix the cause named by the check, such as a file readable by other users or a path inside the worktree. Do not loosen the check. |
+| The proof file is missing | The launch expired or the proof was already used. Ask Direct for a new offer. |
+| `401` | The token is missing, mistyped, expired or revoked. Create a new one. See [Connect a client](../mcp/connecting.md#troubleshooting). |
+| `401` with a tenant header problem | Send exactly one `x-cratis-tenant-id` header with your tenant id, and no other identity or session headers. |
+| `403` | The token lacks the `direct:work` scope, or you are not an active member. |
+| `not-found` on a claim | Direct does not say whether the work exists. Check that local sessions are turned on, the harness is configured for your organization, and the launch is current. |
+| `lease-lost`, `stale-epoch` or `cancelled` | The claim no longer has authority. Stop the local work. A heartbeat or release does not bring it back. Start again from a new offer. |
+| `invalid-state` or `idempotency-conflict` | Correct the requested step or `idempotencyKey`. Do not report success. |
+
+The runner is meant to remove a leftover proof file, but that is not implemented yet. If a session ended without
+deleting its proof file, delete the file yourself.
+
 ## The runner shows a problem about its enrollment code
 
 | Message | What to do |
