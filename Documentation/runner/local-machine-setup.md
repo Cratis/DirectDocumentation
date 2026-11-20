@@ -1,6 +1,6 @@
 ---
 title: Set up a machine for local sessions
-description: One path from a clean machine to a first piece of dispatched work, in order - what to ask the operator for, a token in the keychain, an MCP client, one runner install, image approval, the GitHub App and a first check.
+description: Set up a machine for local Cratis Direct sessions, in order - operator access, a token, an MCP client, the runner, image approval and a first check.
 ---
 
 This page puts the steps for a new machine in order and links to the page that owns each one. It does not repeat
