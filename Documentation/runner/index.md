@@ -55,4 +55,5 @@ you keep your organization's secrets.
 - [Configure the runner](./configuring.md) - settings, and who a runner runs work for.
 - [Share your machine](./sharing-your-machine.md) - pause new work, set paused hours and protect worker containers from cleanup.
 - [Serve local models](./serving-local-models.md) - expose models from Ollama, LM Studio and similar servers on your machine to Cratis Direct, with or without Docker.
+- [Providers, harnesses and fallback](./capabilities-and-fallback.md) - how work picks a provider, a harness and a runner, and what happens when nothing fits.
 - [Troubleshooting](./troubleshooting.md) - when the runner does not connect or does not take work.

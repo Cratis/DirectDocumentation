@@ -4,3 +4,5 @@
   href: runner/toc.yml
 - name: MCP
   href: mcp/toc.yml
+- name: Forgejo
+  href: forgejo/toc.yml

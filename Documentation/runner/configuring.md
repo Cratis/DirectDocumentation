@@ -152,7 +152,7 @@ was enrolled with.
 
 | Field | What it holds |
 | --- | --- |
-| `Harnesses` | The worker harnesses this machine can run: `claude`, `pi` or `copilot`. |
+| `Harnesses` | The worker harnesses this machine can run: `claude`, `pi`, `copilot`, `codex` or `opencode`. See [How work picks a provider, a harness and a runner](./capabilities-and-fallback.md). |
 | `LocalModels` | Models served on this machine, each with a `Model` name and an `Endpoint` that workers in Docker can reach. The endpoint must be `http` or `https`, with no user name, password or query. |
 | `Credentials` | Which kinds of credential are available, each with a `Provider` (`Anthropic`, `OpenAI`, `AzureOpenAI`, `OpenAICompatible`, `ZAI`, `OpenAICodex` or `Copilot`) and a `Mode` (`api-key`, `oauth` or `subscription`). |
 

@@ -2,6 +2,8 @@
   href: index.md
 - name: Get started
   href: getting-started.md
+- name: Set up a machine for local sessions
+  href: local-machine-setup.md
 - name: Install the runner
   href: installing.md
 - name: Configure the runner
@@ -10,5 +12,9 @@
   href: sharing-your-machine.md
 - name: Serve local models
   href: serving-local-models.md
+- name: Providers, harnesses and fallback
+  href: capabilities-and-fallback.md
+- name: Build a harness adapter
+  href: harnesses.md
 - name: Troubleshooting
   href: troubleshooting.md
