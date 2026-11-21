@@ -10,6 +10,8 @@
   href: configuring.md
 - name: Share your machine
   href: sharing-your-machine.md
+- name: Serve local models
+  href: serving-local-models.md
 - name: Providers, harnesses and fallback
   href: capabilities-and-fallback.md
 - name: Build a harness adapter

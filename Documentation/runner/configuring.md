@@ -104,6 +104,8 @@ codes are not persisted, as described above. The settings listed below are optio
 | `Reserve:ClearMargin` | 10% of each reserve, at least 0.5 GiB | How far above a reserve free space must rise before new work starts again. |
 | `Capabilities` | None | What the machine offers workers. See [Declare capabilities](#declare-capabilities). |
 | `LocalSources` | None | Repositories workers can use from this machine. See [Offer local sources](#offer-local-sources). |
+| `Models` | None | Model servers on this machine that the runner serves to Cratis Direct. See [Serve local models](./serving-local-models.md). |
+| `Mode` | `Full` | `Full` runs workers and serves models. `ModelsOnly`, also set with `--models-only`, only serves models and needs no Docker. |
 
 A setting comes from the first of these that has it:
 
